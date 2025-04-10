@@ -1,0 +1,3 @@
+[tool.taskipy.tasks]
+run = "python app.py"
+try = "python testeWindow.py"
