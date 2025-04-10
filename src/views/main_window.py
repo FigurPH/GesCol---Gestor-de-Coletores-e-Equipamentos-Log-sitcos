@@ -19,9 +19,9 @@ class MainWindow(wx.Frame):
         self.tab_atribuicoes = TabAtribuicoes(self.notebook)
         self.tab_relatorios = TabRelatorios(self.notebook)
 
+        self.notebook.AddPage(self.tab_colaboradores, "Colaboradores")
         self.notebook.AddPage(self.tab_atribuicoes, "Atribuições")
         self.notebook.AddPage(self.tab_relatorios, "Relatórios")
-        self.notebook.AddPage(self.tab_colaboradores, "Colaboradores")
         self.notebook.AddPage(self.tab_coletores, "Coletores")
         self.notebook.AddPage(self.tab_empilhadeiras, "Empilhadeiras")
         self.notebook.AddPage(self.tab_transpaleteiras, "Transpaleteiras")

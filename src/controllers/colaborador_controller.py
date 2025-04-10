@@ -1,4 +1,4 @@
-from src.models import Colaborador
+from models.colaborador import Colaborador
 from peewee import IntegrityError
 
 
@@ -25,6 +25,35 @@ def listar_colaboradores():
             print(f"- {colaborador.nome} (Matrícula: {colaborador.matricula}), Cargo: {colaborador.cargo}, Transp.: {colaborador.autorizado_transpaleteira}, Empilh.: {colaborador.autorizado_empilhadeira}")
     else:
         print("Nenhum colaborador cadastrado.")
+
+def editar_colaborador(matricula, nome, cargo, autorizado_transpaleteira, autorizado_empilhadeira):
+    """Edita as informações de um colaborador existente."""
+    try:
+        colaborador = Colaborador.get(Colaborador.matricula == matricula)
+        colaborador.nome = nome
+        colaborador.cargo = cargo
+        colaborador.autorizado_transpaleteira = autorizado_transpaleteira
+        colaborador.autorizado_empilhadeira = autorizado_empilhadeira
+        colaborador.save()
+        return True
+    except Colaborador.DoesNotExist:
+        print(f"Erro ao editar: Colaborador com matrícula {matricula} não encontrado.")
+        return False
+    except Exception as e:
+        print(f"Erro ao editar colaborador: {e}")
+        return False
+    
+
+def excluir_colaborador(matricula):
+    """Exclui as informações de um colaborador existente"""
+    try:
+        colaborador = Colaborador.get(Colaborador.matricula == matricula)
+        colaborador.delete_instance()
+        return True
+    except Exception:
+        print('algo errado')
+        return False
+
 
 def buscar_colaborador(matricula):
     try:
