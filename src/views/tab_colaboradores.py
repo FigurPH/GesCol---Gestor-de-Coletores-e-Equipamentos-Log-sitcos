@@ -62,7 +62,7 @@ class TabColaboradores(wx.Panel):
             self.list_ctrl.SetItem(list_index, 2, colaborador['cargo'])
             self.list_ctrl.SetItem(list_index, 3, 'Sim' if colaborador['autorizado_transpaleteira'] else 'Não')
             self.list_ctrl.SetItem(list_index, 4, 'Sim' if colaborador['autorizado_empilhadeira'] else 'Não')
-            print(f"Carregado na lista: Matrícula={colaborador['matricula']}, Nome={colaborador['nome']}") # DEBUG
+            #print(f"Carregado na lista: Matrícula={colaborador['matricula']}, Nome={colaborador['nome']}") # DEBUG
 
     def on_atualizar_lista(self, event):
         """Evento chamado ao clicar no botão 'Atualizar Lista'."""
@@ -148,11 +148,11 @@ class AdicionarColaboradorDialog(wx.Dialog):
         super().__init__(parent, title="Adicionar Colaborador", size=(400, 300))
 
         # --- Elementos da Interface ---
-        wx.StaticText(self, label="Matrícula:")
+        #wx.StaticText(self, label="Matrícula:")
         self.txt_matricula = wx.TextCtrl(self)
-        wx.StaticText(self, label="Nome:")
+        #wx.StaticText(self, label="Nome:")
         self.txt_nome = wx.TextCtrl(self)
-        wx.StaticText(self, label="Cargo:")
+        #wx.StaticText(self, label="Cargo:")
         self.txt_cargo = wx.TextCtrl(self)
         self.cb_transpaleteira = wx.CheckBox(self, label="Autorizado Transpaleteira")
         self.cb_empilhadeira = wx.CheckBox(self, label="Autorizado Empilhadeira")
@@ -169,11 +169,11 @@ class AdicionarColaboradorDialog(wx.Dialog):
         sizer_campos.AddMany([
             (wx.StaticText(self, label="Matrícula:"), 0, wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL),
             (self.txt_matricula, 0, wx.EXPAND),
-            (wx.StaticText(self, label="Nome:"), 0, wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL),
+            (wx.StaticText(self, label="Nome:"), 1, wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL),
             (self.txt_nome, 0, wx.EXPAND),
-            (wx.StaticText(self, label="Cargo:"), 0, wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL),
+            (wx.StaticText(self, label="Cargo:"), 2, wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL),
             (self.txt_cargo, 0, wx.EXPAND),
-            (wx.StaticText(self, label=""), 0), # Espaço vazio
+            (wx.StaticText(self, label=""), 3), # Espaço vazio
             (sizer_checkboxes, 0, wx.EXPAND)
         ])
 
@@ -196,16 +196,13 @@ class EditarColaboradorDialog(wx.Dialog):
         self.colaborador = colaborador
 
         # --- Elementos da Interface ---
-        wx.StaticText(self, label="Matrícula:")
         self.txt_matricula = wx.TextCtrl(self, value=self.colaborador.matricula, style=wx.TE_READONLY) # Não permitir editar a matrícula
-        wx.StaticText(self, label="Nome:")
         self.txt_nome = wx.TextCtrl(self, value=self.colaborador.nome)
-        wx.StaticText(self, label="Cargo:")
         self.txt_cargo = wx.TextCtrl(self, value=self.colaborador.cargo)
+        #Inicializando os CheckBoxes
         self.cb_transpaleteira = wx.CheckBox(self, label="Autorizado Transpaleteira")
         self.cb_empilhadeira = wx.CheckBox(self, label="Autorizado Empilhadeira")
-
-        #Definindo valores
+        #Definindo valores dos Check Boxes
         self.cb_transpaleteira.SetValue(self.colaborador.autorizado_transpaleteira)
         self.cb_empilhadeira.SetValue(self.colaborador.autorizado_empilhadeira)
 

@@ -2,7 +2,7 @@ from peewee import *
 from .database import BaseModel
 
 class Coletor(BaseModel):
-    id = AutoField()
+    id = IntegerField(primary_key=True)
     modelo = CharField(unique=True)
     disponibilidade = BooleanField(default=True)
 
