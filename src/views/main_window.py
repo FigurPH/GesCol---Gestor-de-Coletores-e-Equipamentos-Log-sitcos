@@ -23,8 +23,9 @@ class MainWindow(wx.Frame):
         self.notebook.AddPage(self.tab_colaboradores, "Colaboradores")
         self.notebook.AddPage(self.tab_atribuicoes, "Atribuições")
         self.notebook.AddPage(self.tab_relatorios, "Relatórios")
-        self.notebook.AddPage(self.tab_empilhadeiras, "Empilhadeiras")
-        self.notebook.AddPage(self.tab_transpaleteiras, "Transpaleteiras")
+        self.notebook.AddPage(self.tab_equipamentos, "Equipamentos")
+        #self.notebook.AddPage(self.tab_empilhadeiras, "Empilhadeiras")
+        #self.notebook.AddPage(self.tab_transpaleteiras, "Transpaleteiras")
 
         self.CreateStatusBar()
         self.SetStatusText("Bem-vindo ao GesCol!")
