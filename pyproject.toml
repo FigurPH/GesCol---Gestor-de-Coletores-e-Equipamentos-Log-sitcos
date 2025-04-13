@@ -1,5 +1,7 @@
 [tool.taskipy.tasks]
 run = "python app.py"
+lint = "ruff format"
+pre-lint = "ruff check"
 try = "python testeWindow.py"
 
 [tool.ruff]
