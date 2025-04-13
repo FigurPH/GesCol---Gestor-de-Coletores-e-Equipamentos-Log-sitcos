@@ -1,11 +1,12 @@
 from peewee import *
+
 from .database import BaseModel
 
 
 class Transpaleteira(BaseModel):
-	id = AutoField()
-	modelo = CharField(unique=True)
-	disponibilidade = BooleanField(default=True)
+    id = AutoField()
+    modelo = CharField(unique=True)
+    disponibilidade = BooleanField(default=True)
 
-	def __str__(self):
-		return f'Transpaleteira {self.id} ({self.modelo})'
+    def __str__(self):
+        return f'Transpaleteira {self.id} ({self.modelo})'

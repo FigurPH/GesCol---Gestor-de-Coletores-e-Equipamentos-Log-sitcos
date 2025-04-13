@@ -1,11 +1,11 @@
 from models import (
-	atribuicao,
-	colaborador,
-	coletor,
-	database,
-	empilhadeira,
-	transpaleteira,
-	equipamento,
+    atribuicao,
+    colaborador,
+    coletor,
+    database,
+    empilhadeira,
+    equipamento,
+    transpaleteira,
 )
 
 db = database.db
