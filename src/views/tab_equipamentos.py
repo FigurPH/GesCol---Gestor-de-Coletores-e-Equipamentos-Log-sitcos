@@ -73,7 +73,7 @@ class TabEquipamentos(wx.Panel):
                 print(f'Número: {numero}', 
                       f'Modelo: {modelo}',
                       f'Tipo: {tipo}',
-                      f'Disponível: {disponivel}') #FUncionando até aqui. #TODO Terminar
+                      f'Disponível: {disponivel}') #FUncionando até aqui. #TODO Terminar aqui
 
             # Adiciona o equipamento usando o controller
             '''self.controller.adicionar_equipamento(
