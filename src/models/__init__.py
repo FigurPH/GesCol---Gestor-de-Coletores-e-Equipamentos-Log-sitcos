@@ -1,6 +1,11 @@
 from models import (
-    atribuicao, colaborador, coletor,
-    database, empilhadeira, transpaleteira
+    atribuicao,
+    colaborador,
+    coletor,
+    database,
+    empilhadeira,
+    equipamento,
+    transpaleteira,
 )
 
 db = database.db
@@ -9,3 +14,4 @@ Colaborador = colaborador.Colaborador()
 Coletor = coletor.Coletor()
 Empilhadeira = empilhadeira.Empilhadeira()
 Transpaleteira = transpaleteira.Transpaleteira()
+Equipamento = equipamento.Equipamento()

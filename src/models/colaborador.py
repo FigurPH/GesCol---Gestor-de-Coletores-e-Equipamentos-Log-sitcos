@@ -1,5 +1,7 @@
 from peewee import *
+
 from .database import BaseModel
+
 
 class Colaborador(BaseModel):
     matricula = CharField(primary_key=True)
@@ -9,4 +11,4 @@ class Colaborador(BaseModel):
     autorizado_empilhadeira = BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.nome} ({self.matricula})"
+        return f'{self.nome} ({self.matricula})'

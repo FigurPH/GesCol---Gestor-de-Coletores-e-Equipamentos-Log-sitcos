@@ -1,3 +1,27 @@
 [tool.taskipy.tasks]
 run = "python app.py"
-try = "python testeWindow.py"
+lint = 'ruff check . && ruff check . --diff'
+format = 'ruff check . --fix && ruff format .'
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ['migrations']
+exclude = [".venv", "data"]
+indent-width = 4
+
+
+[tool.ruff.format]
+quote-style = "single"
+docstring-code-format = true
+docstring-code-line-length = 20
+preview = true
+
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+ignore = [
+    "E101", "E111", "W191", "PLR6301", "E501",
+    "F405", "F403", "E711", "E712", "PLR0912", "PLR0911"
+]
+

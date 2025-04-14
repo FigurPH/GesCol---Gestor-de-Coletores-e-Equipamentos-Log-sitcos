@@ -1,25 +1,25 @@
 from peewee import IntegrityError
 
-from src.models import Empilhadeira
+from src.models import Equipamento
 
 
 def adicionar_coletor(modelo):
     try:
-        empilhadeira = Empilhadeira.create(modelo=modelo)
+        equipamento = Equipamento.create(modelo=modelo)
         print(
-            f'Coletor {empilhadeira.modelo} (ID: {empilhadeira.id}) adicionado com sucesso.'
+            f'Coletor {equipamento.modelo} (ID: {equipamento.id}) adicionado com sucesso.'
         )
-        return empilhadeira
+        return equipamento
     except IntegrityError:
         print(f'Erro: Coletor com modelo {modelo} já existe.')
         return None
 
 
 def listar_coletores():
-    empilhadeira = Empilhadeira.select()
-    if empilhadeira:
+    equipamento = Equipamento.select()
+    if equipamento:
         print('\nLista de Coletores:')
-        for coletor in empilhadeira:
+        for coletor in equipamento:
             print(
                 f'- ID: {coletor.id}, Modelo: {coletor.modelo}, Disponível: {coletor.disponibilidade}'
             )
@@ -29,11 +29,11 @@ def listar_coletores():
 
 def buscar_coletor(empilhadeira_id):
     try:
-        empilhadeira = Empilhadeira.get(Empilhadeira.id == empilhadeira_id)
+        equipamento = Equipamento.get(Equipamento.id == empilhadeira_id)
         print(f'\nInformações do Coletor {empilhadeira_id}:')
-        print(f'- Modelo: {empilhadeira.modelo}')
-        print(f'- Disponibilidade: {empilhadeira.disponibilidade}')
-        return empilhadeira
-    except Empilhadeira.DoesNotExist:
+        print(f'- Modelo: {equipamento.modelo}')
+        print(f'- Disponibilidade: {equipamento.disponibilidade}')
+        return equipamento
+    except Equipamento.DoesNotExist:
         print(f'Erro: Coletor com ID {empilhadeira_id} não encontrado.')
         return None
