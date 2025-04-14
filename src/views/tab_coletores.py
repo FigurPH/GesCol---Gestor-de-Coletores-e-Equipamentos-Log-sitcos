@@ -16,6 +16,7 @@ class TabColetores(wx.Panel):
                 style=wx.LC_REPORT | wx.BORDER_SUNKEN | wx.LC_SINGLE_SEL,
             )
         )
+
         # Criação das colunas ID, modelo, disponibilidade no elemento de lista
         self.list_ctrl.InsertColumn(0, 'Número Col.', width=100)
         self.list_ctrl.InsertColumn(1, 'Modelo Col.', width=100)
@@ -205,28 +206,16 @@ class AdiconarColetorDialog(wx.Dialog):
         sizer_botoes = wx.BoxSizer(wx.HORIZONTAL)
 
         sizer_campos.AddMany([
-            (
-                wx.StaticText(self, label='Número:'),
-                0,
-                wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL,
-            ),
+            (wx.StaticText(self, label='Número:'), 0,
+             wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL),
             (self.txt_numero, 0, wx.EXPAND),
-            (
-                wx.StaticText(self, label='Modelo:'),
-                0,
-                wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL,
-            ),
+            (wx.StaticText(self, label='Modelo:'), 0,
+             wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL),
             (self.txt_modelo, 0, wx.EXPAND),
-            (
-                wx.StaticText(self, label='Disponível:'),
-                0,
-                wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL,
-            ),
+            (wx.StaticText(self, label='Disponível:'), 0,
+             wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL),
             (self.cb_disponivel, 0, wx.EXPAND),
-            (
-                wx.StaticText(self, label=''),
-                0,
-            ),  # Espaço vazio
+            (wx.StaticText(self, label=''), 0,),  # Espaço vazio
             (sizer_checkboxes, 0, wx.EXPAND),
         ])
 
