@@ -4,15 +4,22 @@ from models.coletor import Coletor
 
 
 def adicionar_coletor(id, modelo, disponibilidade):
-    try:
-        coletor = Coletor.create(
-            id=id, modelo=modelo, disponibilidade=disponibilidade
-        )
-        # print(f"Coletor {coletor.modelo} (ID: {coletor.id}) adicionado com sucesso.")
-        return coletor
-    except IntegrityError:
-        print(f'Erro: Coletor com modelo {modelo} já existe.')
-        return None
+    if id and modelo and disponibilidade is not None:
+        try:
+            coletor = Coletor.create(
+                id=id, modelo=modelo, disponibilidade=disponibilidade
+            )
+            # print(f"Coletor {coletor.modelo} (ID: {coletor.id}) adicionado com sucesso.")
+            return coletor
+        except IntegrityError as e:
+            if "datatype mismatch" in str(e):
+                print(f'Erro: ID deve ser um inteiro. {type(e)} > {e}')
+            else:
+                print(f'Erro: Coletor com número {id} já existe. {type(e)} > {e}')
+                return None
+    else:
+        print('Erro: ID, modelo e disponibilidade são obrigatórios.')
+        return None        
 
 
 def listar_coletores():

@@ -9,7 +9,8 @@ def create_tables():
             Coletor,
             Empilhadeira,
             Transpaleteira,
-            Atribuicao
+            Atribuicao,
+            #Equipamento
         ])
 
 if not os.path.exists('data'):

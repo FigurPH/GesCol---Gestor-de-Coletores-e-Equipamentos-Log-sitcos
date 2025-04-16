@@ -28,7 +28,7 @@ class TabColetores(wx.Panel):
         self.btn_atualizar = wx.Button(self, label='Atualizar Lista')
         self.btn_upload_csv = wx.Button(self, label='...')
         """
-        #TODO fazer essa lógica aqui. Replicar depois em tab_colaborador.
+        #TODO fazer essa lógica aqui do "...". Replicar depois nas outras TABS.
         #INFO Manter essa anotação de ToDo até terminar todas TABS!
         """
 
@@ -56,10 +56,10 @@ class TabColetores(wx.Panel):
         self.list_ctrl.Bind(
             wx.EVT_LIST_ITEM_ACTIVATED, self.on_editar_coletor
         )  # Duplo clique
-        self.list_ctrl.Bind(wx.EVT_LIST_ITEM_SELECTED, self.on_item_selected)
         self.list_ctrl.Bind(
-            wx.EVT_LIST_ITEM_DESELECTED, self.on_item_deselected
-        )
+            wx.EVT_LIST_ITEM_SELECTED, lambda event: self.atualizar_estado_botoes())
+        self.list_ctrl.Bind(
+            wx.EVT_LIST_ITEM_DESELECTED, lambda event: self.atualizar_estado_botoes())
 
         # --- Inicialização dos Widgets ---
         self.carregar_coletores()  # Carrega os coletores para exibição
@@ -88,15 +88,7 @@ class TabColetores(wx.Panel):
         tem_selecao = self.list_ctrl.GetFirstSelected() != -1
         self.btn_editar.Enable(tem_selecao)
         self.btn_excluir.Enable(tem_selecao)
-
-    def on_item_selected(self, event):
-        """Evento chamado quando um item da lista é selecionado."""
-        self.atualizar_estado_botoes()
-
-    def on_item_deselected(self, event):
-        """Evento chamado quando um item da lista é deselecionado."""
-        self.atualizar_estado_botoes()
-
+        
     def on_adicionar_coletor(self, event=None):
         dlg = AdiconarColetorDialog(self)
         if dlg.ShowModal() == wx.ID_OK:
@@ -151,7 +143,7 @@ class TabColetores(wx.Panel):
                 dlg.Destroy()
         self.atualizar_estado_botoes()
 
-    def on_excluir_coletor(self, event):
+    def on_excluir_coletor(self, event=None):
         selected_index = self.list_ctrl.GetFirstSelected()
         if selected_index != -1:
             coletor_numero = self.list_ctrl.GetItemText(selected_index, 0)

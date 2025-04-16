@@ -38,21 +38,21 @@ class MainWindow(wx.Frame):
         self.notebook = wx.Notebook(self)
 
         # Inicialização das abas
-        self.tab_colaboradores = TabColaboradores(self.notebook)
-        self.tab_coletores = TabColetores(self.notebook)
         self.tab_atribuicoes = TabAtribuicoes(self.notebook)
+        self.tab_colaboradores = TabColaboradores(self.notebook)
         self.tab_relatorios = TabRelatorios(self.notebook)
         self.tab_equipamentos = TabEquipamentos(self.notebook)
+        self.tab_coletores = TabColetores(self.notebook)
         # As abas abaixo estão comentadas, mas podem ser ativadas se necessário
         # self.tab_empilhadeiras = TabEmpilhadeiras(self.notebook)
         # self.tab_transpaleteiras = TabTranspaleteiras(self.notebook)
 
         # Adiciona as abas ao notebook
-        self.notebook.AddPage(self.tab_equipamentos, 'Equipamentos')
-        self.notebook.AddPage(self.tab_coletores, 'Coletores')
-        self.notebook.AddPage(self.tab_colaboradores, 'Colaboradores')
         self.notebook.AddPage(self.tab_atribuicoes, 'Atribuições')
         self.notebook.AddPage(self.tab_relatorios, 'Relatórios')
+        self.notebook.AddPage(self.tab_colaboradores, 'Colaboradores')
+        self.notebook.AddPage(self.tab_equipamentos, 'Equipamentos')
+        self.notebook.AddPage(self.tab_coletores, 'Coletores')
 
         # self.notebook.AddPage(self.tab_empilhadeiras, "Empilhadeiras")
         # self.notebook.AddPage(self.tab_transpaleteiras, "Transpaleteiras")

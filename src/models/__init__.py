@@ -4,7 +4,7 @@ from models import (
     coletor,
     database,
     empilhadeira,
-    equipamento,
+    #equipamento,
     transpaleteira,
 )
 
@@ -14,4 +14,4 @@ Colaborador = colaborador.Colaborador()
 Coletor = coletor.Coletor()
 Empilhadeira = empilhadeira.Empilhadeira()
 Transpaleteira = transpaleteira.Transpaleteira()
-Equipamento = equipamento.Equipamento()
+#Equipamento = equipamento.Equipamento()

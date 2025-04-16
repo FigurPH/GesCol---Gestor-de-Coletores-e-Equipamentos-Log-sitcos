@@ -5,8 +5,8 @@ from .database import BaseModel
 
 class Colaborador(BaseModel):
     matricula = CharField(primary_key=True)
-    nome = CharField()
-    cargo = CharField()
+    nome = CharField(null=False)
+    cargo = CharField(null=False)
     autorizado_transpaleteira = BooleanField(default=False)
     autorizado_empilhadeira = BooleanField(default=False)
 

@@ -4,8 +4,8 @@ from .database import BaseModel
 
 
 class Empilhadeira(BaseModel):
-    id = AutoField()
-    modelo = CharField(unique=True)
+    id = IntegerField(primary_key=True)
+    modelo = CharField(null=False)
     disponibilidade = BooleanField(default=True)
 
     def __str__(self):

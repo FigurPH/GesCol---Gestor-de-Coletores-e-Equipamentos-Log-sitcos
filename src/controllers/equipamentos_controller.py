@@ -1,39 +1,29 @@
 from peewee import IntegrityError
 
-from src.models import Equipamento
+from controllers import empilhadeira_controller, transpaleteira_controller
+from models import Empilhadeira, Transpaleteira
 
 
-def adicionar_coletor(modelo):
-    try:
-        equipamento = Equipamento.create(modelo=modelo)
-        print(
-            f'Coletor {equipamento.modelo} (ID: {equipamento.id}) adicionado com sucesso.'
-        )
-        return equipamento
-    except IntegrityError:
-        print(f'Erro: Coletor com modelo {modelo} já existe.')
-        return None
 
+def listar_equipamentos():
+    empilhadeiras = Empilhadeira.select()
+    transpaleteiras = Transpaleteira.select()
+    lista_exibicao = []
 
-def listar_coletores():
-    equipamento = Equipamento.select()
-    if equipamento:
-        print('\nLista de Coletores:')
-        for coletor in equipamento:
-            print(
-                f'- ID: {coletor.id}, Modelo: {coletor.modelo}, Disponível: {coletor.disponibilidade}'
-            )
-    else:
-        print('Nenhum coletor cadastrado.')
-
-
-def buscar_coletor(empilhadeira_id):
-    try:
-        equipamento = Equipamento.get(Equipamento.id == empilhadeira_id)
-        print(f'\nInformações do Coletor {empilhadeira_id}:')
-        print(f'- Modelo: {equipamento.modelo}')
-        print(f'- Disponibilidade: {equipamento.disponibilidade}')
-        return equipamento
-    except Equipamento.DoesNotExist:
-        print(f'Erro: Coletor com ID {empilhadeira_id} não encontrado.')
-        return None
+    for empilhadeira in empilhadeiras:
+        lista_exibicao.append({
+            'id': empilhadeira.id,
+            'modelo': empilhadeira.modelo,
+            'disponibilidade': empilhadeira.disponibilidade,
+            'tipo': 'Empilhadeira'
+        })
+    
+    for transpaleteira in transpaleteiras:
+        lista_exibicao.append({
+            'id': transpaleteira.id,
+            'modelo': transpaleteira.modelo,
+            'disponibilidade': transpaleteira.disponibilidade,
+            'tipo': 'Transpaleteira'
+        })
+    
+    return lista_exibicao

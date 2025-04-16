@@ -50,9 +50,9 @@ class TabColaboradores(wx.Panel):
             wx.EVT_LIST_ITEM_ACTIVATED,
             self.on_editar_colaborador,
         )  # Duplo clique
-        self.list_ctrl.Bind(wx.EVT_LIST_ITEM_SELECTED, self.on_item_selected)
+        self.list_ctrl.Bind(wx.EVT_LIST_ITEM_SELECTED, lambda event: self.atualizar_estado_botoes())
         self.list_ctrl.Bind(
-            wx.EVT_LIST_ITEM_DESELECTED, self.on_item_deselected
+            wx.EVT_LIST_ITEM_DESELECTED, lambda event: self.atualizar_estado_botoes()
         )
 
         # --- Inicialização ---
@@ -82,12 +82,12 @@ class TabColaboradores(wx.Panel):
                 'Sim' if colaborador['autorizado_empilhadeira'] else 'Não',
             )
 
-    def on_atualizar_lista(self, event):
+    def on_atualizar_lista(self, event=None):
         """Evento chamado ao clicar no botão 'Atualizar Lista'."""
         self.carregar_colaboradores()
         self.atualizar_estado_botoes()
 
-    def on_adicionar_colaborador(self, event):
+    def on_adicionar_colaborador(self, event=None):
         """Evento chamado ao clicar no botão 'Adicionar'."""
         dlg = AdicionarColaboradorDialog(self)
         if dlg.ShowModal() == wx.ID_OK:
@@ -97,20 +97,29 @@ class TabColaboradores(wx.Panel):
             autorizado_transp = dlg.cb_transpaleteira.GetValue()
             autorizado_emp = dlg.cb_empilhadeira.GetValue()
 
-            colaborador = self.controller.adicionar_colaborador(
-                matricula,
-                nome,
-                cargo,
-                autorizado_transp,
-                autorizado_emp,
-            )
-            if colaborador:
-                wx.MessageBox(
-                    f'Colaborador {nome} adicionado com sucesso!',
-                    'Sucesso',
-                    wx.OK | wx.ICON_INFORMATION,
+            if matricula and nome and cargo is not None:
+                colaborador = self.controller.adicionar_colaborador(
+                    matricula,
+                    nome,
+                    cargo,
+                    autorizado_transp,
+                    autorizado_emp,
                 )
-                self.carregar_colaboradores()
+                if colaborador:
+                    wx.MessageBox(
+                        f'Colaborador {nome} adicionado com sucesso!',
+                        'Sucesso',
+                        wx.OK | wx.ICON_INFORMATION,
+                    )
+                    self.on_atualizar_lista()
+
+            else:
+                wx.MessageBox(
+                    'Erro: Os campos: Matrícula, Nome e Cargo são obrigatórios.',
+                    'Erro',
+                    wx.OK | wx.ICON_ERROR,
+                )
+                self.on_adicionar_colaborador()
         dlg.Destroy()
         self.atualizar_estado_botoes()
 
@@ -186,13 +195,6 @@ class TabColaboradores(wx.Panel):
                 dlg.Destroy()
         self.atualizar_estado_botoes()
 
-    def on_item_selected(self, event):
-        """Evento chamado quando um item da lista é selecionado."""
-        self.atualizar_estado_botoes()
-
-    def on_item_deselected(self, event):
-        """Evento chamado quando um item da lista é deselecionado."""
-        self.atualizar_estado_botoes()
 
     def atualizar_estado_botoes(self):
         """Atualiza o estado dos botões 'Editar' e 'Excluir' com base na seleção da lista."""
