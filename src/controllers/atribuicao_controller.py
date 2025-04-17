@@ -1,13 +1,13 @@
 # src/controllers/atribuicao_controller.py
 from datetime import datetime
+from peewee import IntegrityError
 
-from src.models import (
-    Atribuicao,
-    Colaborador,
-    Coletor,
-    Empilhadeira,
-    Transpaleteira,
-)
+
+from models.atribuicao import Atribuicao
+from models.colaborador import Colaborador
+from models.coletor import Coletor
+from models.empilhadeira import Empilhadeira
+from models.transpaleteira import Transpaleteira
 
 
 def iniciar_turno(
@@ -247,3 +247,8 @@ def buscar_atribuicao_por_id(atribuicao_id):
     except Atribuicao.DoesNotExist:
         print(f'Erro: Atribuição com ID {atribuicao_id} não encontrada.')
         return None
+
+
+def carregar_informacoes_colaborador(matricula):
+    colaborador = Colaborador.get(Colaborador.matricula == matricula)
+    return colaborador
