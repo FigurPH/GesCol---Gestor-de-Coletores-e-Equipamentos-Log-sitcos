@@ -53,6 +53,10 @@ Contribuições são bem-vindas! Siga os passos abaixo:
     ```
 5. Abra um Pull Request.
 
+### Precisa-se de ajuda!
+
+Estou com dificuldades em gerar um spec funcional para o PyInstaller gerar um programa nativo para Windows (preferencialmente OneFolder). Se alguém conseguir me ajudar, fico eternamente grato!
+
 ## Licença
 
 Este projeto é licenciado sob os termos da [GNU General Public License v3.0](LICENSE).
