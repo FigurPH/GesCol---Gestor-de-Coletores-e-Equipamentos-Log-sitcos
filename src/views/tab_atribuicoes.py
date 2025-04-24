@@ -122,33 +122,35 @@ class TabAtribuicoes(wx.Panel):
         self.lbl_cargo.SetLabelText(atribuicoes.colaborador.cargo)
         self.txt_coletor_id.Enable()
         self.btn_atribuir_coletor.Enable()
-        if atribuicoes.coletor:
-            print(atribuicoes.coletor.id)
-            self.txt_coletor_id.SetValue(str(atribuicoes.coletor.id).zfill(3))
-            self.btn_atribuir_coletor.SetLabel('Devolver')
-            if atribuicoes.colaborador.autorizado_transpaleteira:
-                self.cb_transpaleteira.SetValue(True)
-                self.btn_atribuir_transpaleteira.Enable()
-            if atribuicoes.colaborador.autorizado_empilhadeira:
-                self.cb_empilhadeira.SetValue(True)
-                self.btn_atribuir_empilhadeira.Enable()
+        try:
+            if atribuicoes.coletor:
+                self.txt_coletor_id.SetValue(str(atribuicoes.coletor.id).zfill(3))
+                self.btn_atribuir_coletor.SetLabel('Devolver')
+                if atribuicoes.colaborador.autorizado_transpaleteira:
+                    self.cb_transpaleteira.SetValue(True)
+                    self.btn_atribuir_transpaleteira.Enable()
+                if atribuicoes.colaborador.autorizado_empilhadeira:
+                    self.cb_empilhadeira.SetValue(True)
+                    self.btn_atribuir_empilhadeira.Enable()
+        except Exception:
+            print('Nenhum coletor atribuído ainda (tab_atribuições)')
 
-    def on_atribuir_coletor(self, evet=None): 
+    def on_atribuir_coletor(self, evet=None):
+        coletor_id = self.txt_coletor_id.GetValue() or None
+        matricula = self.matricula.GetValue() or None
+
         if self.btn_atribuir_coletor.GetLabel() == 'Atribuir':
-            matricula = self.matricula.GetValue() if self.matricula.GetValue() else None
-            coletor_id = self.txt_coletor_id.GetValue() if self.txt_coletor_id.GetValue() else None
-            if self.controller.atribuir_coletor(
-                matricula=matricula,
-                coletor_id=coletor_id
-                ):
-                self.on_buscar_colaborador()
-            else:
-                print('Mensagem dizendo que coletor não existe')
-                self.on_buscar_colaborador()
-
+            sucesso = self.controller.atribuir_coletor(matricula=matricula, coletor_id=coletor_id)
+            mensagem = (f'Coletor {coletor_id} atribuído à Matrícula {matricula}'
+                if sucesso else 'Não foi possível atribuir este coletor à matrícula fornecida')
         else:
-            print('devolver') #self.controller.devolver_coletor()
+            sucesso = self.controller.devolver_coletor(coletor_id)
+            mensagem = (f'Coletor {coletor_id} devolvido.'
+                if sucesso else 'Erro ao devolver coletor.')
 
+        print(mensagem)
+        self.on_buscar_colaborador()
+        
 
     def on_atribuir_transpaleteira(self, evet=None): ...
 

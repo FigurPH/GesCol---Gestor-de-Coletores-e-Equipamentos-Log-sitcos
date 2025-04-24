@@ -30,6 +30,6 @@ class Atribuicao(BaseModel):
             equipamentos.append(f'Empilhadeira: {self.empilhadeira}')
         if self.transpaleteira:
             equipamentos.append(f'Transpaleteira: {self.transpaleteira}')
-        return f'Atribuição para {self.colaborador.nome} em \
+        return f'Model: Atribuição para {self.colaborador.nome} em \
             {self.data_inicio.strftime("%Y-%m-%d %H:%M:%S")}. Equipamentos: \
             {", ".join(equipamentos)}'

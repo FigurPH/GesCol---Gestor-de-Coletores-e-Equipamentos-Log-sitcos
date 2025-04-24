@@ -4,7 +4,70 @@ from src.controllers import coletor_controller
 
 
 class TabColetores(wx.Panel):
+    """
+    Classe TabColetores
+    --------------
+    A classe TabColetores é responsável por gerenciar a interface gráfica da aba de coletores em um aplicativo wxPython. 
+    Ela permite a exibição, adição, edição, exclusão e atualização de uma lista de coletores, além de carregar dados de 
+    coletores a partir de um controlador.
+    --------------
+    TabColetores(wx.Panel):
+    bm
+    Classe responsável por gerenciar a interface gráfica da aba de coletores em um aplicativo wxPython. 
+    Permite a exibição, adição, edição, exclusão e atualização de uma lista de coletores, além de carregar 
+    dados de coletores a partir de um controlador.
+    Atributos:
+        coletores_lista (list): Lista de coletores a serem exibidos na interface.
+        controller (object): Referência ao controlador responsável por gerenciar os dados dos coletores.
+        list_ctrl (wx.ListCtrl): Componente de lista para exibir os coletores.
+        btn_adicionar (wx.Button): Botão para adicionar um novo coletor.
+        btn_editar (wx.Button): Botão para editar o coletor selecionado.
+        btn_excluir (wx.Button): Botão para excluir o coletor selecionado.
+        btn_atualizar (wx.Button): Botão para atualizar a lista de coletores.
+        btn_upload_csv (wx.Button): Botão para carregar coletores a partir de um arquivo CSV.
+    Métodos:
+        __init__(parent):
+            Inicializa a interface gráfica e configura os elementos da aba de coletores.
+        on_atualizar_lista(event):
+            Atualiza a lista de coletores exibida na interface.
+        carregar_coletores():
+            Carrega os coletores do controlador e os exibe na lista.
+        atualizar_estado_botoes():
+            Atualiza o estado dos botões "Editar" e "Excluir" com base na seleção atual da lista.
+        on_adicionar_coletor(event=None):
+            Abre um diálogo para adicionar um novo coletor e atualiza a lista após a adição.
+        on_editar_coletor(event):
+            Abre um diálogo para editar o coletor selecionado e atualiza a lista após a edição.
+        on_excluir_coletor(event=None):
+            Exclui o coletor selecionado após confirmação do usuário e atualiza a lista.
+        upload_csv():
+            Método reservado para implementar a funcionalidade de carregar coletores a partir de um arquivo CSV.
+    """
+
     def __init__(self, parent):
+        """
+        Inicializa a interface gráfica da aba de coletores.
+        Args:
+            parent: Referência ao elemento pai da interface.
+        Atributos:
+            coletores_lista (list): Lista de coletores a serem exibidos.
+            controller: Referência ao controlador responsável pelos coletores.
+            list_ctrl (wx.ListCtrl): Componente de lista para exibição dos coletores.
+            btn_adicionar (wx.Button): Botão para adicionar um novo coletor.
+            btn_editar (wx.Button): Botão para editar o coletor selecionado.
+            btn_excluir (wx.Button): Botão para excluir o coletor selecionado.
+            btn_atualizar (wx.Button): Botão para atualizar a lista de coletores.
+            btn_upload_csv (wx.Button): Botão para upload de arquivos CSV.
+        Layout:
+            - Um sizer principal (sizer_principal) organiza os elementos verticalmente.
+            - Um sizer de botões (sizer_botoes) organiza os botões horizontalmente.
+        Eventos:
+            - Botões possuem eventos associados para adicionar, editar, excluir e atualizar coletores.
+            - A lista captura eventos de seleção, deseleção e duplo clique para interação com os itens.
+        Inicialização:
+            - Carrega os coletores para exibição na lista.
+            - Atualiza o estado dos botões "Editar" e "Excluir" com base na seleção atual.
+        """
         super().__init__(parent)
         self.coletores_lista = []  # Criação da lista de coletores a serem exibidos
         self.controller = coletor_controller  # Referencia ao controller
@@ -66,10 +129,30 @@ class TabColetores(wx.Panel):
         self.atualizar_estado_botoes()  # Atualiza os estados dos botões Editar e Excluir
 
     def on_atualizar_lista(self, event):
+        """
+        Manipula o evento para atualizar a lista de coletores.
+
+        Este método é acionado por um evento e realiza as seguintes ações:
+        1. Atualiza o estado dos botões na interface.
+        2. Carrega ou atualiza a lista de coletores.
+
+        Args:
+            event: O objeto de evento que acionou este método.
+        """
         self.atualizar_estado_botoes()
         self.carregar_coletores()
 
     def carregar_coletores(self):
+        """
+        Carrega a lista de coletores no controle de lista da interface.
+        Este método limpa todos os itens existentes no controle de lista e, em seguida,
+        preenche-o com os dados dos coletores obtidos do controlador. Para cada coletor,
+        são exibidos o ID (com 3 dígitos, preenchido com zeros à esquerda), o modelo
+        e a disponibilidade (exibida como 'Sim' ou 'Não').
+        Returns:
+            None
+        """
+
         self.list_ctrl.DeleteAllItems()
         self.coletores_lista = self.controller.listar_coletores()
         for index, coletor in enumerate(self.coletores_lista):
@@ -84,12 +167,33 @@ class TabColetores(wx.Panel):
             )
 
     def atualizar_estado_botoes(self):
-        """Atualiza o estado dos botões 'Editar' e 'Excluir' com base na seleção da lista."""
+        """
+        Atualiza o estado dos botões "Editar" e "Excluir" com base na seleção da lista.
+
+        Este método verifica se há algum item selecionado na lista controlada por `list_ctrl`.
+        Caso exista uma seleção, os botões "Editar" e "Excluir" são habilitados; caso contrário,
+        eles são desabilitados.
+
+        Returns:
+            None
+        """
         tem_selecao = self.list_ctrl.GetFirstSelected() != -1
         self.btn_editar.Enable(tem_selecao)
         self.btn_excluir.Enable(tem_selecao)
 
     def on_adicionar_coletor(self, event=None):
+        """
+        Método chamado ao adicionar um novo coletor.
+        Este método exibe um diálogo para o usuário inserir as informações de um novo coletor.
+        Caso o usuário confirme a operação, os dados do coletor são obtidos do diálogo e 
+        enviados para o controlador para serem adicionados ao sistema. Após a adição bem-sucedida, 
+        uma mensagem de sucesso é exibida e a lista de coletores é recarregada.
+        Args:
+            event (wx.Event, opcional): Evento que disparou a ação. Padrão é None.
+        Retorna:
+            bool: Retorna True após a execução bem-sucedida do método.
+        """
+
         dlg = AdiconarColetorDialog(self)
         if dlg.ShowModal() == wx.ID_OK:
             numero = dlg.txt_numero.GetValue()
@@ -113,7 +217,23 @@ class TabColetores(wx.Panel):
         return True
 
     def on_editar_coletor(self, event):
-        """Evento chamado ao clicar no botão 'Editar' ou dar duplo clique na lista."""
+        """
+        Evento chamado ao clicar no botão 'Editar' ou ao dar duplo clique na lista de coletores.
+        Este método permite editar as informações de um coletor selecionado na lista.
+        Ele exibe um diálogo de edição com os dados do coletor, permitindo que o usuário
+        altere o número, modelo e disponibilidade do coletor. Após a confirmação, as
+        alterações são salvas e a lista de coletores é atualizada.
+        Args:
+            event: O evento disparado pelo clique no botão ou duplo clique na lista.
+        Comportamento:
+            - Obtém o índice do coletor selecionado na lista.
+            - Busca os dados do coletor correspondente através do controlador.
+            - Exibe um diálogo de edição com os dados do coletor.
+            - Atualiza os dados do coletor no sistema se o usuário confirmar as alterações.
+            - Exibe mensagens de sucesso ou erro dependendo do resultado da operação.
+            - Atualiza o estado dos botões da interface.
+        """
+
         select_index = self.list_ctrl.GetFirstSelected()
         if select_index != -1:
             id = self.list_ctrl.GetItemText(select_index, 0)
@@ -144,6 +264,25 @@ class TabColetores(wx.Panel):
         self.atualizar_estado_botoes()
 
     def on_excluir_coletor(self, event=None):
+        """
+        Método responsável por excluir um coletor selecionado na lista.
+        Este método é acionado ao clicar no botão de exclusão. Ele verifica se há
+        um coletor selecionado na lista, solicita confirmação do usuário para a
+        exclusão e, caso confirmado, tenta excluir o coletor utilizando o
+        controlador. Após a exclusão, a lista de coletores é recarregada.
+        Parâmetros:
+            event (wx.Event, opcional): Evento que acionou o método. Padrão é None.
+        Funcionalidade:
+            - Obtém o índice do coletor selecionado na lista.
+            - Exibe uma mensagem de confirmação para o usuário.
+            - Caso confirmado, tenta excluir o coletor através do controlador.
+            - Exibe mensagens de sucesso ou erro dependendo do resultado.
+            - Atualiza a lista de coletores e o estado dos botões.
+        Observação:
+            Este método utiliza a biblioteca wxPython para exibir diálogos e
+            mensagens ao usuário.
+        """
+
         selected_index = self.list_ctrl.GetFirstSelected()
         if selected_index != -1:
             coletor_numero = self.list_ctrl.GetItemText(selected_index, 0)
@@ -178,6 +317,28 @@ class TabColetores(wx.Panel):
 
 
 class AdiconarColetorDialog(wx.Dialog):
+    """
+    Classe AdiconarColetorDialog
+    -----------
+    Esta classe representa um diálogo para adicionar um coletor no sistema, utilizando a biblioteca wxPython.
+    Atributos:
+    -----------
+    - txt_numero (wx.TextCtrl): Campo de texto para entrada do número do coletor.
+    - txt_modelo (wx.TextCtrl): Campo de texto para entrada do modelo do coletor.
+    - cb_disponivel (wx.CheckBox): Caixa de seleção para indicar se o coletor está disponível.
+    - btn_salvar (wx.Button): Botão para salvar as informações do coletor.
+    - btn_cancelar (wx.Button): Botão para cancelar a operação.
+    Métodos:
+    --------
+    - __init__(parent): Construtor da classe que inicializa os elementos da interface e organiza o layout.
+    Layout:
+    -------
+    - sizer_principal (wx.BoxSizer): Gerenciador de layout principal que organiza os elementos verticalmente.
+    - sizer_campos (wx.FlexGridSizer): Gerenciador de layout para organizar os campos de entrada em uma grade flexível.
+    - sizer_checkboxes (wx.BoxSizer): Gerenciador de layout para organizar as caixas de seleção (atualmente não utilizado).
+    - sizer_botoes (wx.BoxSizer): Gerenciador de layout para organizar os botões horizontalmente.
+    """
+
     def __init__(self, parent):
         super().__init__(parent, title='Adicionar Coletor', size=(400, 300))
 
@@ -224,7 +385,31 @@ class AdiconarColetorDialog(wx.Dialog):
 
 
 class EditarColetorDialog(wx.Dialog):
-    """Dialog para editar um Coletor"""
+    """
+    Classe EditarColetorDialog
+    -----------
+    Esta classe representa um diálogo para editar as informações de um coletor no sistema. 
+    Ela utiliza a biblioteca wxPython para criar uma interface gráfica.
+    Atributos:
+    -----------
+    coletor : object
+        Objeto que contém as informações do coletor a serem editadas.
+    txt_numero : wx.TextCtrl
+        Campo de texto para exibir o ID do coletor (somente leitura).
+    txt_modelo : wx.TextCtrl
+        Campo de texto para editar o modelo do coletor.
+    cb_disponivel : wx.CheckBox
+        Caixa de seleção para indicar a disponibilidade do coletor.
+    btn_salvar : wx.Button
+        Botão para salvar as alterações realizadas.
+    btn_cancelar : wx.Button
+        Botão para cancelar a edição e fechar o diálogo.
+    Métodos:
+    --------
+    __init__(parent, coletor)
+        Construtor da classe. Inicializa os elementos da interface e configura o layout.
+    """
+    
 
     def __init__(self, parent, coletor):
         super().__init__(parent, title='Editar Coletor', size=(400, 300))

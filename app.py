@@ -10,8 +10,8 @@ sys.path.append(
 
 print()
 
-from views.main_window import MainWindow
 from resources.settings import Settings
+from views.main_window import MainWindow
 
 if __name__ == '__main__':
     app = wx.App()
