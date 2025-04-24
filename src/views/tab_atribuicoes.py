@@ -2,6 +2,7 @@ import wx
 
 from controllers import atribuicao_controller
 
+
 class TabAtribuicoes(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -13,7 +14,8 @@ class TabAtribuicoes(wx.Panel):
 
         # --- Linha Superior: Campo de ID e Botão Buscar ---
         search_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.matricula = wx.TextCtrl(self, size=(200, -1), name="matricula")
+        # Adiciona o campo de texto para buscar pela matrícula e inclui captura de ação de Enter
+        self.matricula = wx.TextCtrl(self, size=(200, -1), name="matricula", style=wx.TE_PROCESS_ENTER)
         self.matricula.SetHint("Matrícula")
         self.matricula.SetBackgroundColour(wx.Colour(255, 255, 255))
         self.btn_buscar = wx.Button(self, label="Buscar", name="btn_buscar")
@@ -50,6 +52,7 @@ class TabAtribuicoes(wx.Panel):
         transpaleteira_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.cb_transpaleteira = wx.CheckBox(self, label="Transpaleteira")
         self.txt_transpaleteira_id = wx.TextCtrl(self, size=(150, -1), name="txt_transpaleteira_id")
+        self.txt_transpaleteira_id.SetValue("Em breve...")
         self.btn_atribuir_transpaleteira = wx.Button(self, label="Atribuir", name="btn_atribuir_transpaleteira")
         self.data_transpaleteira = wx.StaticText(self, label="data_transpaleteira")
         transpaleteira_sizer.Add(self.cb_transpaleteira, 0, wx.ALL, 5)
@@ -60,8 +63,9 @@ class TabAtribuicoes(wx.Panel):
 
         # Linha da Empilhadeira
         empilhadeira_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.cb_empilhadeira = wx.CheckBox(self, label="Empilhadeira")
+        self.cb_empilhadeira = wx.CheckBox(self, label="Empilhadeira  ")
         self.txt_empilhadeira_id = wx.TextCtrl(self, size=(150, -1), name="txt_empilhadeira_id")
+        self.txt_empilhadeira_id.SetValue("Em breve...")
         self.btn_atribuir_empilhadeira = wx.Button(self, label="Atribuir", name="btn_atribuir_empilhadeira")
         self.data_empilhadeira = wx.StaticText(self, label="data_empilhadeira")
         empilhadeira_sizer.Add(self.cb_empilhadeira, 0, wx.ALL, 5)
@@ -71,7 +75,6 @@ class TabAtribuicoes(wx.Panel):
         equipamentos_sizer.Add(empilhadeira_sizer, 0, wx.EXPAND)
 
         main_sizer.Add(equipamentos_sizer, 0, wx.EXPAND | wx.ALL, 10)
-
 
         # --- Botões e campos iniciam desativados ---
         self.txt_coletor_id.Disable()
@@ -85,52 +88,80 @@ class TabAtribuicoes(wx.Panel):
         self.data_coletor.Hide()
         self.data_transpaleteira.Hide()
         self.data_empilhadeira.Hide()
-        
 
         # --- Configuração Final ---
         self.SetSizer(main_sizer)
 
         # --- Bindings ---
         self.btn_buscar.Bind(wx.EVT_BUTTON, self.on_buscar_colaborador)
+        self.matricula.Bind(wx.EVT_TEXT_ENTER, self.on_buscar_colaborador)
         self.btn_atribuir_coletor.Bind(wx.EVT_BUTTON,
-                                       lambda x: self.atribuir_equipamento('coletor'))
+                                       lambda x: self.atribuir_equipamento(tipo_equipamento='coletor'))
         self.btn_atribuir_transpaleteira.Bind(wx.EVT_BUTTON,
                                               lambda x: self.atribuir_equipamento('transpaleteira'))
         self.btn_atribuir_empilhadeira.Bind(wx.EVT_BUTTON,
                                             lambda x: self.atribuir_equipamento('empilhadeira'))
 
+        self.limpa_tela()
 
+    def limpa_tela(self):
+        self.btn_atribuir_coletor.Disable()
+        self.btn_atribuir_coletor.SetLabel('Atribuir')
+
+        self.btn_atribuir_empilhadeira.Disable()
+        self.btn_atribuir_transpaleteira.Disable()
+        self.txt_coletor_id.Disable()
+        self.txt_coletor_id.SetValue('')
+        self.txt_empilhadeira_id.Disable()
+        self.txt_transpaleteira_id.Disable()
 
     def on_buscar_colaborador(self, evet=None):
-        colaborador = atribuicao_controller.carregar_informacoes_colaborador(self.matricula.GetValue())
-        self.lbl_nome.SetLabelText(colaborador.nome)
-        self.lbl_cargo.SetLabelText(colaborador.cargo)
+        self.limpa_tela()
+        atribuicoes = atribuicao_controller.carregar_informacoes_colaborador(self.matricula.GetValue())
+        self.lbl_nome.SetLabelText(atribuicoes.colaborador.nome)
+        self.lbl_cargo.SetLabelText(atribuicoes.colaborador.cargo)
+        self.txt_coletor_id.Enable()
         self.btn_atribuir_coletor.Enable()
-        if colaborador.autorizado_transpaleteira:
-            self.cb_transpaleteira.SetValue(True)
-            self.btn_atribuir_transpaleteira.Enable()
-        if colaborador.autorizado_empilhadeira:
-            self.cb_empilhadeira.SetValue(True)
-            self.btn_atribuir_empilhadeira.Enable()
+        if atribuicoes.coletor:
+            print(atribuicoes.coletor.id)
+            self.txt_coletor_id.SetValue(str(atribuicoes.coletor.id).zfill(3))
+            self.btn_atribuir_coletor.SetLabel('Devolver')
+            if atribuicoes.colaborador.autorizado_transpaleteira:
+                self.cb_transpaleteira.SetValue(True)
+                self.btn_atribuir_transpaleteira.Enable()
+            if atribuicoes.colaborador.autorizado_empilhadeira:
+                self.cb_empilhadeira.SetValue(True)
+                self.btn_atribuir_empilhadeira.Enable()
+
+    def on_atribuir_coletor(self, evet=None): 
+        if self.btn_atribuir_coletor.GetLabel() == 'Atribuir':
+            matricula = self.matricula.GetValue() if self.matricula.GetValue() else None
+            coletor_id = self.txt_coletor_id.GetValue() if self.txt_coletor_id.GetValue() else None
+            if self.controller.atribuir_coletor(
+                matricula=matricula,
+                coletor_id=coletor_id
+                ):
+                self.on_buscar_colaborador()
+            else:
+                print('Mensagem dizendo que coletor não existe')
+                self.on_buscar_colaborador()
+
+        else:
+            print('devolver') #self.controller.devolver_coletor()
 
 
-    def on_atribuir_coletor(self, evet=None):...
+    def on_atribuir_transpaleteira(self, evet=None): ...
 
-    def on_atribuir_transpaleteira(self, evet=None):...
-
-    def on_atribuir_empilhadeira(self, evet=None):...
+    def on_atribuir_empilhadeira(self, evet=None): ...
 
     def atribuir_equipamento(self, tipo_equipamento):
         match tipo_equipamento:
             case 'coletor':
-                print('É um coletor')
+                print('É um coletor, tentando adicionar')
+                self.on_atribuir_coletor()
 
             case 'transpaleteira':
                 print('É uma transpaleteira')
-                
+
             case 'empilhadeira':
                 print('É uma empilhadeira')
-
-
-
-

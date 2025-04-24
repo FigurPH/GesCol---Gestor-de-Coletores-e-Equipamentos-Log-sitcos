@@ -19,7 +19,7 @@ def adicionar_coletor(id, modelo, disponibilidade):
                 return None
     else:
         print('Erro: ID, modelo e disponibilidade são obrigatórios.')
-        return None        
+        return None
 
 
 def listar_coletores():
@@ -43,7 +43,6 @@ def buscar_coletor(coletor_id):
         print(f"- Disponibilidade: {coletor.disponibilidade}")"""
         return coletor
     except Coletor.DoesNotExist:
-        print(f'Erro: Coletor com ID {type(coletor_id)} não encontrado.')
         return None
 
 

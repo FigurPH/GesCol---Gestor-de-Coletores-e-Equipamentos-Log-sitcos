@@ -8,13 +8,18 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), 'src'))
 )
 
+print()
+
 from views.main_window import MainWindow
+from resources.settings import Settings
 
 if __name__ == '__main__':
     app = wx.App()
     main_window = MainWindow(
         None, 'GesCol - Gestão de Equipamentos Logísticos'
     )
+    if not Settings().DEBUG:
+        main_window.Maximize()
     main_window.Show()
     app.MainLoop()
 
