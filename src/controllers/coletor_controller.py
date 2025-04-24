@@ -19,7 +19,7 @@ def adicionar_coletor(id, modelo, disponibilidade):
                 return None
     else:
         print('Erro: ID, modelo e disponibilidade são obrigatórios.')
-        return None        
+        return None
 
 
 def listar_coletores():
@@ -37,13 +37,9 @@ def listar_coletores():
 def buscar_coletor(coletor_id):
     try:
         coletor = Coletor.get(Coletor.id == coletor_id)
-        print(f'Encontrado o coletor {coletor_id}')
-        """print(f"\nInformações do Coletor {coletor_id}:")
-        print(f"- Modelo: {coletor.modelo}")
-        print(f"- Disponibilidade: {coletor.disponibilidade}")"""
+        print(f'Coletor_Controller encontrou o coletor {coletor_id}')
         return coletor
     except Coletor.DoesNotExist:
-        print(f'Erro: Coletor com ID {type(coletor_id)} não encontrado.')
         return None
 
 

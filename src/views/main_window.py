@@ -48,8 +48,8 @@ class MainWindow(wx.Frame):
         # self.tab_transpaleteiras = TabTranspaleteiras(self.notebook)
 
         # Adiciona as abas ao notebook
-        self.notebook.AddPage(self.tab_atribuicoes, 'Atribuições')
         self.notebook.AddPage(self.tab_relatorios, 'Relatórios')
+        self.notebook.AddPage(self.tab_atribuicoes, 'Atribuições')
         self.notebook.AddPage(self.tab_colaboradores, 'Colaboradores')
         self.notebook.AddPage(self.tab_equipamentos, 'Equipamentos')
         self.notebook.AddPage(self.tab_coletores, 'Coletores')
@@ -59,7 +59,7 @@ class MainWindow(wx.Frame):
 
         # Cria uma barra de status na parte inferior da janela
         self.CreateStatusBar()
-        self.SetStatusText('Bem-vindo ao GesCol!')
+        self.SetStatusText('Bem-vindo ao GesCol!            |              v0.8.1')
 
         # Centraliza a janela na tela
         self.Centre()

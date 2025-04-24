@@ -8,6 +8,9 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), 'src'))
 )
 
+print()
+
+from resources.settings import Settings
 from views.main_window import MainWindow
 
 if __name__ == '__main__':
@@ -15,6 +18,8 @@ if __name__ == '__main__':
     main_window = MainWindow(
         None, 'GesCol - Gestão de Equipamentos Logísticos'
     )
+    if not Settings().DEBUG:
+        main_window.Maximize()
     main_window.Show()
     app.MainLoop()
 

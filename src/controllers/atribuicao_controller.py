@@ -1,249 +1,172 @@
 # src/controllers/atribuicao_controller.py
+
+
 from datetime import datetime
 
-from src.models import (
-    Atribuicao,
-    Colaborador,
-    Coletor,
-    Empilhadeira,
-    Transpaleteira,
-)
+from models.atribuicao import Atribuicao
+from models.colaborador import Colaborador
+from src.controllers import coletor_controller
 
 
-def iniciar_turno(
-    colaborador_matricula,
-    coletor_id,
-    empilhadeira_id=None,
-    transpaleteira_id=None,
-):
+def buscar_atribuicao_por_matricula(matricula):
     """
-    Inicia o turno de um colaborador, atribuindo um coletor e, opcionalmente,
-    uma empilhadeira e/ou transpaleteira, verificando as autorizações e disponibilidades.
+    Busca a atribuição ativa de um colaborador com base na matrícula.
+
+    Esta função consulta o banco de dados para encontrar a atribuição mais recente
+    de um colaborador cuja matrícula corresponda ao valor fornecido. Apenas atribuições
+    que ainda estão ativas (ou seja, cuja data de término é nula) são consideradas.
 
     Args:
-        colaborador_matricula (str): Matrícula do colaborador.
-        coletor_id (int): ID do coletor a ser atribuído.
-        empilhadeira_id (int, opcional): ID da empilhadeira a ser atribuída. Defaults to None.
-        transpaleteira_id (int, opcional): ID da transpaleteira a ser atribuída. Defaults to None.
+        matricula (str): A matrícula do colaborador para o qual a atribuição será buscada.
 
     Returns:
-        Atribuicao or None: O objeto Atribuicao criado em caso de sucesso, None em caso de erro.
+        Atribuicao or None: Retorna a atribuição ativa mais recente do colaborador, 
+        ou None se nenhuma atribuição ativa for encontrada.
     """
-    try:
-        colaborador = Colaborador.get(
-            Colaborador.matricula == colaborador_matricula
-        )
-    except Colaborador.DoesNotExist:
-        print(
-            f'Erro: Colaborador com matrícula {colaborador_matricula} não encontrado.'
-        )
-        return None
-
-    try:
-        coletor = Coletor.get(
-            Coletor.id == coletor_id,
-            Coletor.disponibilidade == True,
-        )
-    except Coletor.DoesNotExist:
-        print(
-            f'Erro: Coletor com ID {coletor_id} não encontrado ou indisponível.'
-        )
-        return None
-
-    empilhadeira = None
-    if empilhadeira_id is not None:
-        if not colaborador.autorizado_empilhadeira:
-            print(
-                f'Erro: Colaborador {colaborador_matricula} não autorizado a usar empilhadeira.'
-            )
-            return None
-        try:
-            empilhadeira = Empilhadeira.get(
-                Empilhadeira.id == empilhadeira_id,
-                Empilhadeira.disponibilidade == True,
-            )
-        except Empilhadeira.DoesNotExist:
-            print(
-                f'Erro: Empilhadeira com ID {empilhadeira_id} não encontrada ou indisponível.'
-            )
-            return None
-
-    transpaleteira = None
-    if transpaleteira_id is not None:
-        if not colaborador.autorizado_transpaleteira:
-            print(
-                f'Erro: Colaborador {colaborador_matricula} não autorizado a usar transpaleteira.'
-            )
-            return None
-        try:
-            transpaleteira = Transpaleteira.get(
-                Transpaleteira.id == transpaleteira_id,
-                Transpaleteira.disponibilidade == True,
-            )
-        except Transpaleteira.DoesNotExist:
-            print(
-                f'Erro: Transpaleteira com ID {transpaleteira_id} não encontrada ou indisponível.'
-            )
-            return None
-
-    try:
-        atribuicao = Atribuicao.create(
-            colaborador=colaborador,
-            coletor=coletor,
-            empilhadeira=empilhadeira,
-            transpaleteira=transpaleteira,
-            data_inicio=datetime.now(),
-        )
-
-        coletor.disponibilidade = False
-        coletor.save()
-        if empilhadeira:
-            empilhadeira.disponibilidade = False
-            empilhadeira.save()
-        if transpaleteira:
-            transpaleteira.disponibilidade = False
-            transpaleteira.save()
-
-        print(
-            f'Turno iniciado para {colaborador.nome} (Matrícula: {colaborador.matricula}) com Coletor ID: {coletor.id}.'
-        )
-        if empilhadeira:
-            print(f'Empilhadeira ID: {empilhadeira.id} atribuída.')
-        if transpaleteira:
-            print(f'Transpaleteira ID: {transpaleteira.id} atribuída.')
-        return atribuicao
-    except Exception as e:
-        print(f'Erro ao iniciar turno: {e}')
-        return None
-
-
-def finalizar_turno(atribuicao_id):
-    """
-    Finaliza o turno de um colaborador, marcando a data de fim da atribuição
-    e tornando os equipamentos atribuídos novamente disponíveis.
-
-    Args:
-        atribuicao_id (int): ID da atribuição a ser finalizada.
-
-    Returns:
-        bool: True se a finalização foi bem-sucedida, False caso contrário.
-    """
-    try:
-        atribuicao = Atribuicao.get(
-            Atribuicao.id == atribuicao_id,
-            Atribuicao.data_fim == None,
-        )
-    except Atribuicao.DoesNotExist:
-        print(
-            f'Erro: Atribuição com ID {atribuicao_id} não encontrada ou já finalizada.'
-        )
-        return False
-
-    try:
-        atribuicao.data_fim = datetime.now()
-        atribuicao.save()
-
-        # Tornar os equipamentos disponíveis novamente
-        coletor = atribuicao.coletor
-        coletor.disponibilidade = True
-        coletor.save()
-
-        if atribuicao.empilhadeira:
-            empilhadeira = atribuicao.empilhadeira
-            empilhadeira.disponibilidade = True
-            empilhadeira.save()
-
-        if atribuicao.transpaleteira:
-            transpaleteira = atribuicao.transpaleteira
-            transpaleteira.disponibilidade = True
-            transpaleteira.save()
-
-        print(
-            f'Turno finalizado para a atribuição ID: {atribuicao_id} do colaborador {atribuicao.colaborador.nome}.'
-        )
-        return True
-    except Exception as e:
-        print(f'Erro ao finalizar turno: {e}')
-        return False
-
-
-def listar_atribuicoes_ativas():
-    """
-    Lista todas as atribuições que ainda não foram finalizadas (data_fim é nula).
-
-    Returns:
-        list: Uma lista de objetos Atribuicao ativos.
-    """
-    atribuicoes = (
+    atribuicao = (
         Atribuicao.select()
-        .where(Atribuicao.data_fim == None)
+        .join(Colaborador)
+        .where((Colaborador.matricula == matricula) & (Atribuicao.data_fim.is_null()))
         .order_by(Atribuicao.data_inicio.desc())
     )
-    if atribuicoes:
-        print('\n--- Atribuições Ativas ---')
-        for atribuicao in atribuicoes:
-            equipamentos = []
-            if atribuicao.coletor:
-                equipamentos.append(
-                    f'Coletor: {atribuicao.coletor.modelo} (ID: {atribuicao.coletor.id})'
-                )
-            if atribuicao.empilhadeira:
-                equipamentos.append(
-                    f'Empilhadeira: {atribuicao.empilhadeira.modelo} (ID: {atribuicao.empilhadeira.id})'
-                )
-            if atribuicao.transpaleteira:
-                equipamentos.append(
-                    f'Transpaleteira: {atribuicao.transpaleteira.modelo} (ID: {atribuicao.transpaleteira.id})'
-                )
-            print(
-                f'- ID: {atribuicao.id}, Colaborador: {atribuicao.colaborador.nome} (Matrícula: {atribuicao.colaborador.matricula}), Equipamentos: {", ".join(equipamentos)}, Início: {atribuicao.data_inicio.strftime("%Y-%m-%d %H:%M:%S")}'
-            )
-        return list(atribuicoes)
-    else:
-        print('Não há atribuições ativas no momento.')
-        return []
+    return atribuicao if atribuicao else None
 
 
-def buscar_atribuicao_por_id(atribuicao_id):
+def carregar_informacoes_colaborador(matricula):
     """
-    Busca uma atribuição pelo seu ID.
-
+    Carrega as informações de atribuição de um colaborador com base na matrícula.
+    Este método tenta buscar as atribuições associadas a um colaborador pela matrícula.
+    Caso não encontre atribuições, ele cria e retorna um objeto "falso" de atribuição
+    com os dados do colaborador injetados.
     Args:
-        atribuicao_id (int): ID da atribuição a ser buscada.
-
+        matricula (str): A matrícula do colaborador.
     Returns:
-        Atribuicao or None: O objeto Atribuicao se encontrado, None caso contrário.
+        Atribuicao: Um objeto de atribuição associado ao colaborador, ou um objeto
+        "falso" de atribuição com os dados do colaborador.
+    Raises:
+        Exception: Caso ocorra algum erro durante a execução.
     """
     try:
-        atribuicao = Atribuicao.get(Atribuicao.id == atribuicao_id)
-        equipamentos = []
-        if atribuicao.coletor:
-            equipamentos.append(
-                f'Coletor: {atribuicao.coletor.modelo} (ID: {atribuicao.coletor.id})'
-            )
-        if atribuicao.empilhadeira:
-            equipamentos.append(
-                f'Empilhadeira: {atribuicao.empilhadeira.modelo} (ID: {atribuicao.empilhadeira.id})'
-            )
-        if atribuicao.transpaleteira:
-            equipamentos.append(
-                f'Transpaleteira: {atribuicao.transpaleteira.modelo} (ID: {atribuicao.transpaleteira.id})'
-            )
-        print(f'\n--- Atribuição ID: {atribuicao.id} ---')
-        print(
-            f'- Colaborador: {atribuicao.colaborador.nome} (Matrícula: {atribuicao.colaborador.matricula})'
-        )
-        print(f'- Equipamentos: {", ".join(equipamentos)}')
-        print(
-            f'- Início: {atribuicao.data_inicio.strftime("%Y-%m-%d %H:%M:%S")}'
-        )
-        if atribuicao.data_fim:
-            print(
-                f'- Fim: {atribuicao.data_fim.strftime("%Y-%m-%d %H:%M:%S")}'
-            )
+        atribuicao = buscar_atribuicao_por_matricula(matricula)
+        # atr_id = buscar_atribuicao_por_id([atr.id for atr in atribuicao])
+        if atribuicao:
+            # return atr_id
+            return atribuicao[0]
         else:
-            print('- Fim: Ainda não finalizada')
-        return atribuicao
-    except Atribuicao.DoesNotExist:
-        print(f'Erro: Atribuição com ID {atribuicao_id} não encontrada.')
-        return None
+            colaborador = Colaborador.get(Colaborador.matricula == matricula)
+
+            # Mocka um objeto "falso" de Atribuições com os dados de Colborador injetados
+            return Atribuicao(
+                colaborador=colaborador,
+                coletor=None,
+                empilhadeira=None,
+                transpaleteira=None,
+                data_inicio=None,
+                data_fim=None
+            )
+    except Exception as e:
+        print(f'Erro: {e}')
+
+
+def buscar_atribuicao_por_chave(chave, valor):
+    """
+    Busca uma atribuição no banco de dados com base em uma chave e valor fornecidos.
+
+    Args:
+        chave (str): O nome do campo da classe `Atribuicao` a ser utilizado na busca.
+        valor (Any): O valor correspondente ao campo especificado para filtrar os resultados.
+
+    Returns:
+        Atribuicao: A primeira instância de `Atribuicao` encontrada que corresponde aos critérios
+        de busca, com `data_fim` nulo e ordenada pela data de início em ordem decrescente.
+        Retorna `None` se nenhuma atribuição for encontrada.
+    """
+    campo = getattr(Atribuicao, chave)
+    atribuido = (
+            Atribuicao.select()
+            .where((campo == valor) & (Atribuicao.data_fim.is_null()))
+            .order_by(Atribuicao.data_inicio.desc())
+            .first()
+        )
+    return atribuido
+
+
+def bool_coletor_atribuído(coletor_id) -> bool:
+    """
+    Verifica se o coletor informado está atribuído a alguém.
+
+    Args:
+        coletor_id (int): ID do coletor a ser verificado.
+
+    Returns:
+        bool: True se o coletor está atribuído, False caso contrário.
+    """
+    try:
+        if buscar_atribuicao_por_chave(chave='coletor', valor=coletor_id):
+            return True
+        else:
+            return False
+    except Exception:
+        print('deu exceção no bool atrib controller')
+        return True
+
+
+def atribuir_coletor(matricula, coletor_id):
+    """
+    Atribui um coletor a um colaborador com base na matrícula e no ID do coletor.
+
+    Esta função verifica se o coletor especificado existe e não está atribuído a outro colaborador.
+    Caso o coletor esteja disponível, ela cria um registro de atribuição no banco de dados.
+
+    Args:
+        matricula (str): A matrícula (identificador) do colaborador.
+        coletor_id (int): O ID do coletor a ser atribuído.
+
+    Returns:
+        bool: True se a atribuição foi bem-sucedida, False caso contrário.
+
+    Raises:
+        Exception: Caso ocorra um erro durante o processo de criação da atribuição.
+
+    Observações:
+        - Se o coletor não existir, uma mensagem será exibida indicando isso.
+        - Se o coletor já estiver atribuído, a função não prossegue com a atribuição.
+    """
+    coletor = coletor_controller.buscar_coletor(int(coletor_id))
+    if coletor:
+        if not bool_coletor_atribuído(coletor_id):
+            try:
+                Atribuicao.create(
+                    colaborador=matricula,
+                    coletor=coletor_id
+                )
+                return True
+            except Exception as e:
+                print(f'Deu um erro >> {e} atrib_controll')
+                return False
+    else:
+        print('Mensagem dizendo que coletor não existe')
+
+
+def devolver_coletor(coletor_id):
+    """
+    Devolve o coletor informado, atualizando a atribuição correspondente com a data de término.
+
+    Args:
+        coletor_id (int): ID do coletor a ser devolvido.
+
+    Returns:
+        bool: True se a devolução foi bem-sucedida, False caso contrário.
+    """
+    try:
+        atribuicao = buscar_atribuicao_por_chave(chave='coletor', valor=coletor_id)
+        if atribuicao:
+            atribuicao.data_fim = datetime.now()
+            atribuicao.save()
+            return True
+        else:
+            print("Nenhuma atribuição ativa encontrada para o coletor informado.")
+            return False
+    except Exception as e:
+        print(f"Erro ao devolver coletor: {e}")
+        return False

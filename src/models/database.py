@@ -1,7 +1,9 @@
 # src/models/database.py
 from peewee import *
 
-DATABASE_NAME = 'data/db/gescol.db'
+from resources.settings import Settings
+
+DATABASE_NAME = Settings().DATABASE_URL
 db = SqliteDatabase(DATABASE_NAME)
 
 
