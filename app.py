@@ -8,7 +8,8 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), 'src'))
 )
 
-print()
+# Verifica se o parâmetro DEBUG foi passado como argumento
+DEBUG = '--debug' in sys.argv
 
 from resources.settings import Settings
 from views.main_window import MainWindow
@@ -18,7 +19,8 @@ if __name__ == '__main__':
     main_window = MainWindow(
         None, 'GesCol - Gestão de Equipamentos Logísticos'
     )
-    if not Settings().DEBUG:
+    if not DEBUG:
+        main_window.SetWindowStyle(wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
         main_window.Maximize()
     main_window.Show()
     app.MainLoop()

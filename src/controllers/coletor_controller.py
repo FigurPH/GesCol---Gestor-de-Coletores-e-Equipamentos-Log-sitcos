@@ -4,6 +4,23 @@ from models.coletor import Coletor
 
 
 def adicionar_coletor(id, modelo, disponibilidade):
+    """
+    Adiciona um novo coletor ao sistema.
+    Esta função cria um novo registro de coletor no banco de dados com os parâmetros fornecidos.
+    Args:
+        id (int): Número de identificação único do coletor
+        modelo (str): Modelo/nome do coletor
+        disponibilidade (bool): Estado de disponibilidade do coletor (True para disponível, False para indisponível)
+    Returns:
+        Coletor: Objeto Coletor criado com sucesso
+        None: Se houver erro na criação (ID duplicado ou campos faltantes)
+    Raises:
+        IntegrityError: Quando há violação de integridade do banco de dados (ID duplicado ou tipo de dado incorreto)
+    Exemplo:
+        >>> adicionar_coletor(1, "MC92", True)
+        <Coletor: id=1, modelo='MC92', disponibilidade=True>
+    """
+
     if id and modelo and disponibilidade is not None:
         try:
             coletor = Coletor.create(

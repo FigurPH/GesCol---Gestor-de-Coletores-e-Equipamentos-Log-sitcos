@@ -4,6 +4,19 @@ from models.empilhadeira import Empilhadeira
 
 
 def adicionar_empilhadeira(id, modelo, disponibilidade):
+    """
+    Adiciona uma nova empilhadeira ao sistema.
+    Args:
+        id (int): Identificador único da empilhadeira.
+        modelo (str): Modelo da empilhadeira.
+        disponibilidade (bool): Disponibilidade da empilhadeira (True para disponível, False para indisponível).
+    Returns:
+        Empilhadeira: Objeto da empilhadeira criada, se a operação for bem-sucedida.
+        None: Retorna None se ocorrer um erro, como ID duplicado ou dados obrigatórios ausentes.
+    Raises:
+        IntegrityError: Caso o ID da empilhadeira já exista no banco de dados.
+    """
+
     if id and modelo and disponibilidade is not None:
         try:
             empilhadeira = Empilhadeira.create(
@@ -20,6 +33,15 @@ def adicionar_empilhadeira(id, modelo, disponibilidade):
 
 
 def listar_empilhadeira():
+    """
+    Lista todas as empilhadeiras cadastradas no sistema.
+    Esta função recupera os registros de empilhadeiras do banco de dados
+    e exibe uma lista com o ID, modelo e disponibilidade de cada empilhadeira.
+    Caso não existam empilhadeiras cadastradas, uma mensagem informativa será exibida.
+    Retorna:
+        None
+    """
+
     empilhadeira = Empilhadeira.select()
     if empilhadeira:
         print('\nLista de Coletores:')
@@ -32,6 +54,17 @@ def listar_empilhadeira():
 
 
 def buscar_empilhadeira(empilhadeira_id):
+    """
+    Busca uma empilhadeira no banco de dados pelo seu ID.
+    Args:
+        empilhadeira_id (int): O ID da empilhadeira a ser buscada.
+    Returns:
+        Empilhadeira: Objeto da empilhadeira encontrada, se existir.
+        None: Caso a empilhadeira com o ID fornecido não seja encontrada.
+    Exceções Tratadas:
+        Empilhadeira.DoesNotExist: Lançada quando nenhuma empilhadeira com o ID fornecido é encontrada no banco de dados.
+    """
+
     try:
         empilhadeira = Empilhadeira.get(
             Empilhadeira.id == empilhadeira_id
@@ -43,6 +76,16 @@ def buscar_empilhadeira(empilhadeira_id):
 
 
 def excluir_empilhadeira(empilhadeira_id):
+    """
+    Exclui uma empilhadeira do banco de dados pelo seu ID.
+    Args:
+        empilhadeira_id: ID da empilhadeira a ser excluída.
+    Returns:
+        bool: True se a empilhadeira foi excluída com sucesso, False se não foi encontrada.
+    Raises:
+        Empilhadeira.DoesNotExist: Quando a empilhadeira com o ID especificado não é encontrada.
+    """
+
     try:
         empilhadeira = Empilhadeira.get(Empilhadeira.id == empilhadeira_id)
         empilhadeira.delete_instance()
@@ -54,6 +97,19 @@ def excluir_empilhadeira(empilhadeira_id):
 
 
 def editar_empilhadeira(empilhadeira_id, modelo, disponibilidade):
+    """
+    Edita os dados de uma empilhadeira existente no banco de dados.
+    Args:
+        empilhadeira_id: ID da empilhadeira a ser editada
+        modelo: Novo modelo da empilhadeira
+        disponibilidade: Nova disponibilidade da empilhadeira
+    Returns:
+        bool: True se a edição foi bem sucedida, False caso contrário
+    Raises:
+        Empilhadeira.DoesNotExist: Se a empilhadeira com o ID fornecido não for encontrada
+        Exception: Para outros erros que possam ocorrer durante a edição
+    """
+    
     try:
         empilhadeira = Empilhadeira.get(Empilhadeira.id == empilhadeira_id)
         empilhadeira.modelo = modelo

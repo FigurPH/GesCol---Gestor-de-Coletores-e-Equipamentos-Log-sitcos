@@ -7,5 +7,4 @@ class Settings(BaseSettings):
         extra='ignore'
     )
 
-    DEBUG: bool
     DATABASE_URL: str

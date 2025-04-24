@@ -1,5 +1,5 @@
 [tool.taskipy.tasks]
-run = "python app.py"
+run = "python app.py --debug True"
 lint = 'ruff check . && ruff check . --diff'
 format = 'ruff check . --fix && ruff format .'
 

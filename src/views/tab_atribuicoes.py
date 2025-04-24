@@ -4,6 +4,39 @@ from controllers import atribuicao_controller
 
 
 class TabAtribuicoes(wx.Panel):
+    """
+    Classe TabAtribuicoes
+    Esta classe representa uma aba de atribuições em uma interface gráfica construída com wxPython. 
+    Ela permite gerenciar a atribuição de equipamentos (como coletores, transpaleteiras e empilhadeiras) 
+    a colaboradores, bem como exibir informações relacionadas.
+    Atributos:
+        atribuicao_lista (list): Lista de atribuições.
+        controller (object): Controlador responsável pelas operações de atribuição.
+        matricula (wx.TextCtrl): Campo de texto para entrada da matrícula do colaborador.
+        btn_buscar (wx.Button): Botão para buscar informações do colaborador.
+        lbl_nome (wx.StaticText): Rótulo para exibir o nome do colaborador.
+        lbl_cargo (wx.StaticText): Rótulo para exibir o cargo do colaborador.
+        txt_coletor_id (wx.TextCtrl): Campo de texto para entrada do ID do coletor.
+        btn_atribuir_coletor (wx.Button): Botão para atribuir ou devolver coletor.
+        data_coletor (wx.StaticText): Rótulo para exibir a data de atribuição do coletor.
+        cb_transpaleteira (wx.CheckBox): Checkbox para indicar autorização para transpaleteira.
+        txt_transpaleteira_id (wx.TextCtrl): Campo de texto para entrada do ID da transpaleteira.
+        btn_atribuir_transpaleteira (wx.Button): Botão para atribuir transpaleteira.
+        data_transpaleteira (wx.StaticText): Rótulo para exibir a data de atribuição da transpaleteira.
+        cb_empilhadeira (wx.CheckBox): Checkbox para indicar autorização para empilhadeira.
+        txt_empilhadeira_id (wx.TextCtrl): Campo de texto para entrada do ID da empilhadeira.
+        btn_atribuir_empilhadeira (wx.Button): Botão para atribuir empilhadeira.
+        data_empilhadeira (wx.StaticText): Rótulo para exibir a data de atribuição da empilhadeira.
+    Métodos:
+        __init__(parent): Inicializa a aba de atribuições e configura o layout e os bindings.
+        limpa_tela(): Reseta os campos e botões da interface para o estado inicial.
+        on_buscar_colaborador(event=None): Busca informações do colaborador com base na matrícula.
+        on_atribuir_coletor(event=None): Atribui ou devolve um coletor ao colaborador.
+        on_atribuir_transpaleteira(event=None): (Método a ser implementado) Atribui ou devolve uma transpaleteira.
+        on_atribuir_empilhadeira(event=None): (Método a ser implementado) Atribui ou devolve uma empilhadeira.
+        atribuir_equipamento(tipo_equipamento): Gerencia a atribuição de equipamentos com base no tipo especificado.
+    """
+
     def __init__(self, parent):
         super().__init__(parent)
         self.atribuicao_lista = []
@@ -105,6 +138,18 @@ class TabAtribuicoes(wx.Panel):
         self.limpa_tela()
 
     def limpa_tela(self):
+        """
+        Limpa e desativa os campos e botões relacionados às atribuições na interface.
+        Este método realiza as seguintes ações:
+        - Desativa o botão de atribuir coletor e redefine seu rótulo para 'Atribuir'.
+        - Desativa os botões de atribuir empilhadeira e transpaleteira.
+        - Desativa os campos de entrada de ID de coletor, empilhadeira e transpaleteira.
+        - Limpa o valor do campo de entrada de ID de coletor.
+        Uso:
+        Este método é utilizado para redefinir a interface gráfica ao estado inicial,
+        garantindo que nenhum campo ou botão relacionado às atribuições esteja ativo.
+        """
+
         self.btn_atribuir_coletor.Disable()
         self.btn_atribuir_coletor.SetLabel('Atribuir')
 
@@ -116,6 +161,21 @@ class TabAtribuicoes(wx.Panel):
         self.txt_transpaleteira_id.Disable()
 
     def on_buscar_colaborador(self, evet=None):
+        """
+        Método responsável por buscar as informações de um colaborador com base na matrícula fornecida.
+        Este método realiza as seguintes ações:
+        - Limpa os campos da tela.
+        - Carrega as informações do colaborador utilizando o controlador de atribuições.
+        - Atualiza os rótulos de nome e cargo do colaborador na interface.
+        - Habilita os campos e botões relacionados à atribuição de coletores.
+        - Verifica se o colaborador possui um coletor atribuído e, se sim:
+            - Preenche o campo do ID do coletor.
+            - Atualiza o rótulo do botão para "Devolver".
+            - Habilita os checkboxes e botões para transpaleteira e empilhadeira, caso o colaborador esteja autorizado.
+        Args:
+            evet (Event, opcional): Evento que pode ser passado ao método, geralmente associado a interações da interface gráfica.
+        """
+
         self.limpa_tela()
         atribuicoes = atribuicao_controller.carregar_informacoes_colaborador(self.matricula.GetValue())
         self.lbl_nome.SetLabelText(atribuicoes.colaborador.nome)
@@ -136,6 +196,22 @@ class TabAtribuicoes(wx.Panel):
             print('Nenhum coletor atribuído ainda (tab_atribuições)')
 
     def on_atribuir_coletor(self, evet=None):
+        """
+        Método responsável por atribuir ou devolver um coletor a um colaborador.
+        Args:
+            evet (Event, opcional): Evento disparado pela interface gráfica. Padrão é None.
+        Funcionalidade:
+            - Se o botão "Atribuir" estiver selecionado:
+                - Obtém o ID do coletor e a matrícula do colaborador.
+                - Chama o método `atribuir_coletor` do controller para realizar a atribuição.
+                - Exibe uma mensagem indicando sucesso ou falha na operação.
+            - Caso contrário (botão "Devolver" selecionado):
+                - Chama o método `devolver_coletor` do controller para realizar a devolução.
+                - Exibe uma mensagem indicando sucesso ou falha na operação.
+        Observação:
+            Após a operação, o método `on_buscar_colaborador` é chamado para atualizar os dados exibidos.
+        """
+
         coletor_id = self.txt_coletor_id.GetValue() or None
         matricula = self.matricula.GetValue() or None
 
@@ -157,6 +233,7 @@ class TabAtribuicoes(wx.Panel):
     def on_atribuir_empilhadeira(self, evet=None): ...
 
     def atribuir_equipamento(self, tipo_equipamento):
+        
         match tipo_equipamento:
             case 'coletor':
                 print('É um coletor, tentando adicionar')
