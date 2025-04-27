@@ -24,7 +24,9 @@ class TabRelatorios(wx.Panel):
         self.lbl_transpaleteiras_atribuidas = wx.StaticText(self, label='0')
         empilhadeiras_atribuidas = wx.StaticText(self, label='Empilhadeiras Atribuídas: ')
         self.lbl_empilhadeiras_atribuidas = wx.StaticText(self, label='0')
-
+        # Botão de atualização
+        refresh_button = wx.Button(self, label="⟳", size=(20, 20))
+        refresh_button.Bind(wx.EVT_BUTTON, self.atualizar_tela)
 
         # Adicionando cada elemento à janela
         for stat in [
@@ -34,6 +36,8 @@ class TabRelatorios(wx.Panel):
             empilhadeiras_atribuidas, self.lbl_empilhadeiras_atribuidas
 
         ]: stats_sizer.Add(stat, 0, wx.ALL, 5)
+        # Adiciona um separador visual entre as estatísticas
+        stats_sizer.Add(refresh_button, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         main_sizer.Add(stats_sizer, 0, wx.EXPAND)
 
 
@@ -46,15 +50,16 @@ class TabRelatorios(wx.Panel):
         search_sizer.Add(matricula_label, 0, wx.ALL|wx.CENTER, 5)
         search_sizer.Add(self.matricula_field, 1, wx.ALL, 5)
         
-        colaborador_label = wx.StaticText(self, label="Colaborador:")
-        self.colaborador_field = wx.TextCtrl(self)
-        search_sizer.Add(colaborador_label, 0, wx.ALL|wx.CENTER, 5)
-        search_sizer.Add(self.colaborador_field, 1, wx.ALL, 5)
+        coletor_label = wx.StaticText(self, label="Coletor:")
+        self.coletor_field = wx.TextCtrl(self)
+        search_sizer.Add(coletor_label, 0, wx.ALL|wx.CENTER, 5)
+        search_sizer.Add(self.coletor_field, 1, wx.ALL, 5)
         
-        equipamento_label = wx.StaticText(self, label="Equipamento:")
+        '''equipamento_label = wx.StaticText(self, label="Equipamento:")
         self.equipamento_field = wx.TextCtrl(self)
         search_sizer.Add(equipamento_label, 0, wx.ALL|wx.CENTER, 5)
-        search_sizer.Add(self.equipamento_field, 1, wx.ALL, 5)
+        search_sizer.Add(self.equipamento_field, 1, wx.ALL, 5)''' #TODO Adicionar filtro dos equipamentos com dropdow para selecionar tipo
+
         
         self.btn_filtrar = wx.Button(self, label="Filtrar")
         search_sizer.Add(self.btn_filtrar, 0, wx.ALL, 5)
@@ -79,7 +84,7 @@ class TabRelatorios(wx.Panel):
         
 
         # --- Inicialização ---
-        #self.carregar_conteudo()
+        self.atualizar_tela()
         
 
 
@@ -87,17 +92,76 @@ class TabRelatorios(wx.Panel):
         self.btn_filtrar.Bind(wx.EVT_BUTTON, self.on_filtrar)
         self.SetSizer(main_sizer)
         
+    def atualizar_tela(self, event=None):
+        self.atualizar_estatisticas()
+        self.atualizar_relatorio()
+        self.coletor_field.SetValue('')
+        self.matricula_field.SetValue('')
+
+    def atualizar_estatisticas(self,  event = None):
+        """
+        Atualiza as estatísticas de colaboradores e equipamentos atribuídos.
+        """
+        # Obtém os dados atualizados do controlador
+        colaboradores_ativos = self.controller.contar_colaboradores_ativos()
+        coletores_atribuidos = self.controller.contar_coletores_atribuidos()
+        transpaleteiras_atribuidas = self.controller.contar_transpaleteiras_atribuidas()
+        empilhadeiras_atribuidas = self.controller.contar_empilhadeiras_atribuidas()
+
+        # Atualiza os rótulos com os novos valores
+        self.lbl_colaboradores_ativos.SetLabel(str(colaboradores_ativos))
+        self.lbl_coletores_atribuidos.SetLabel(str(coletores_atribuidos))
+        self.lbl_transpaleteiras_atribuidas.SetLabel(str(transpaleteiras_atribuidas))
+        self.lbl_empilhadeiras_atribuidas.SetLabel(str(empilhadeiras_atribuidas))
+
+    def atualizar_relatorio(self, event=None):
+        """
+        Atualiza a lista de relatórios com os dados mais recentes.
+        """
+        # Limpa a lista atual
+        self.list_ctrl.DeleteAllItems()
+
+        # Obtém os dados atualizados do controlador
+        relatorio = self.controller.buscar_atribuicoes()
+
+        # Preenche a lista com os novos dados
+        for atrib in relatorio:
+            self.list_ctrl.Append([
+                atrib.colaborador.matricula,
+                atrib.colaborador.nome,
+                str(atrib.coletor.id).zfill(3) if atrib.coletor else 'Sem Atribuição',
+                str(atrib.transpaleteira.id).zfill(3) if atrib.transpaleteira else 'Sem Atribuição',
+                str(atrib.empilhadeira.id).zfill(3) if atrib.empilhadeira else 'Sem Atribuição',
+                atrib.data_inicio.strftime('%Y-%m-%d %H:%M:%S')
+            ])
 
 
     def on_filtrar(self, event=None):
-        # Add a counter attribute if it doesn't exist
-        if not hasattr(self, 'counter'):
-            self.counter = 0
-            
-        # Lambda function to increment counter
-        increment = lambda x: x + 1
-        self.counter = increment(self.counter)
+        # Obtém os valores dos campos de filtro
+        matricula = self.matricula_field.GetValue().strip()
+        coletor = self.coletor_field.GetValue().strip()
+        # equipamento = self.equipamento_field.GetValue().strip()
         
-        self.colaboradores_ativos.SetLabel(f'Colaboradores Ativos: {self.counter}')
+
+        # Obtém os dados filtrados do controlador
+        relatorio_filtrado = self.controller.filtrar_atribuicoes(
+            matricula=matricula,
+            coletor=coletor,
+        )
+
+        if relatorio_filtrado:
+        # Limpa a lista atual
+            self.list_ctrl.DeleteAllItems()
+
+        # Preenche a lista com os dados filtrados
+
+            self.list_ctrl.Append([
+            relatorio_filtrado.colaborador.matricula,
+            relatorio_filtrado.colaborador.nome,
+            str(relatorio_filtrado.coletor.id).zfill(3) if relatorio_filtrado.coletor else 'Sem Atribuição',
+            str(relatorio_filtrado.transpaleteira.id).zfill(3) if relatorio_filtrado.transpaleteira else 'Sem Atribuição',
+            str(relatorio_filtrado.empilhadeira.id).zfill(3) if relatorio_filtrado.empilhadeira else 'Sem Atribuição',
+            relatorio_filtrado.data_inicio.strftime('%Y-%m-%d %H:%M:%S')
+            ])
 
 

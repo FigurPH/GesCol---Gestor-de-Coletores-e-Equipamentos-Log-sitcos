@@ -48,8 +48,8 @@ class MainWindow(wx.Frame):
         # self.tab_transpaleteiras = TabTranspaleteiras(self.notebook)
 
         # Adiciona as abas ao notebook
-        self.notebook.AddPage(self.tab_relatorios, 'Relatórios')
         self.notebook.AddPage(self.tab_atribuicoes, 'Atribuições')
+        self.notebook.AddPage(self.tab_relatorios, 'Relatórios')
         self.notebook.AddPage(self.tab_colaboradores, 'Colaboradores')
         self.notebook.AddPage(self.tab_equipamentos, 'Equipamentos')
         self.notebook.AddPage(self.tab_coletores, 'Coletores')
