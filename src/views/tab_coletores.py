@@ -1,6 +1,7 @@
 import wx
 
 from src.controllers import coletor_controller
+from src.controllers import atribuicao_controller
 
 
 class TabColetores(wx.Panel):
@@ -123,12 +124,40 @@ class TabColetores(wx.Panel):
             wx.EVT_LIST_ITEM_SELECTED, lambda event: self.atualizar_estado_botoes())
         self.list_ctrl.Bind(
             wx.EVT_LIST_ITEM_DESELECTED, lambda event: self.atualizar_estado_botoes())
+        self.btn_upload_csv.Bind(wx.EVT_BUTTON, self.on_upload_csv)
 
         # --- Inicialização dos Widgets ---
         self.carregar_coletores()  # Carrega os coletores para exibição
         self.atualizar_estado_botoes()  # Atualiza os estados dos botões Editar e Excluir
 
-    def on_atualizar_lista(self, event):
+    def on_upload_csv(self, event=None):
+        """Evento chamado ao clicar no botão 'Upload CSV'."""
+        with wx.FileDialog(
+            self,
+            'Escolha um arquivo CSV',
+            wildcard='CSV files (*.csv)|*.csv',
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        ) as dlg:
+            if dlg.ShowModal() == wx.ID_OK:
+                caminho_arquivo = dlg.GetPath()
+                try:
+                    self.controller.carregar_coletores_csv(caminho_arquivo)
+                    wx.MessageBox(
+                        'Colaboradores carregados com sucesso!',
+                        'Sucesso',
+                        wx.OK | wx.ICON_INFORMATION,
+                    )
+                    self.carregar_coletores()
+                except Exception as e:
+                    wx.MessageBox(
+                        f'Erro ao carregar colaboradores: {str(e)}',
+                        'Erro',
+                        wx.OK | wx.ICON_ERROR,
+                    )
+
+
+
+    def on_atualizar_lista(self, event=None):
         """
         Manipula o evento para atualizar a lista de coletores.
 
@@ -238,30 +267,41 @@ class TabColetores(wx.Panel):
         if select_index != -1:
             id = self.list_ctrl.GetItemText(select_index, 0)
             coletor = self.controller.buscar_coletor(int(id))
-            if coletor:
-                dlg = EditarColetorDialog(self, coletor)
-                if dlg.ShowModal() == wx.ID_OK:
-                    numero = dlg.txt_numero.GetValue()
-                    modelo = dlg.txt_modelo.GetValue()
-                    disponivel = dlg.cb_disponivel.GetValue()
+            atribuicao =  atribuicao_controller.buscar_atribuicao_por_chave(
+                chave='coletor',
+                valor=coletor.id
+            )
+            if not atribuicao:
+                if coletor:
+                    dlg = EditarColetorDialog(self, coletor)
+                    if dlg.ShowModal() == wx.ID_OK:
+                        numero = dlg.txt_numero.GetValue()
+                        modelo = dlg.txt_modelo.GetValue()
+                        disponivel = dlg.cb_disponivel.GetValue()
 
-                    if self.controller.editar_coletor(
-                        numero, modelo, disponivel
-                    ):
-                        wx.MessageBox(
-                            f'Coletor {numero} atualizado com sucesso!',
-                            'Sucesso',
-                            wx.OK | wx.ICON_INFORMATION,
-                        )
-                        self.carregar_coletores()
-                    else:
-                        wx.MessageBox(
-                            f'Erro ao atualizar o coletor {str(numero).zfill(3)}.',
+                        if self.controller.editar_coletor(
+                            numero, modelo, disponivel
+                        ):
+                            wx.MessageBox(
+                                f'Coletor {numero} atualizado com sucesso!',
+                                'Sucesso',
+                                wx.OK | wx.ICON_INFORMATION,
+                            )
+                            self.carregar_coletores()
+                        else:
+                            wx.MessageBox(
+                                f'Erro ao atualizar o coletor {str(numero).zfill(3)}.',
+                                'Erro',
+                                wx.OK | wx.ICON_ERROR,
+                            )
+                    dlg.Destroy()
+            else:
+                wx.MessageBox(
+                            f'O {str(coletor).zfill(3)} não pode ser alterado pois está atribuído ao colaborador {atribuicao.colaborador.nome}, matrícula {atribuicao.colaborador.matricula}.',
                             'Erro',
                             wx.OK | wx.ICON_ERROR,
                         )
-                dlg.Destroy()
-        self.atualizar_estado_botoes()
+            self.atualizar_estado_botoes()
 
     def on_excluir_coletor(self, event=None):
         """

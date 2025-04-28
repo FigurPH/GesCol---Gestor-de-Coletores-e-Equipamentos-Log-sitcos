@@ -23,12 +23,13 @@ def buscar_atribuicao_por_matricula(matricula):
         Atribuicao or None: Retorna a atribuição ativa mais recente do colaborador, 
         ou None se nenhuma atribuição ativa for encontrada.
     """
+    
     atribuicao = (
         Atribuicao.select()
         .join(Colaborador)
         .where((Colaborador.matricula == matricula) & (Atribuicao.data_fim.is_null()))
         .order_by(Atribuicao.data_inicio.desc())
-    )
+    ) if Colaborador.get(Colaborador.matricula == matricula) else None
     return atribuicao if atribuicao else None
 
 
@@ -133,7 +134,7 @@ def atribuir_coletor(matricula, coletor_id):
         - Se o coletor já estiver atribuído, a função não prossegue com a atribuição.
     """
     coletor = coletor_controller.buscar_coletor(int(coletor_id))
-    if coletor:
+    if coletor and coletor.disponibilidade == True:
         if not bool_coletor_atribuído(coletor_id):
             try:
                 Atribuicao.create(

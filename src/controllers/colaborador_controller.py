@@ -1,3 +1,4 @@
+import csv
 from peewee import IntegrityError
 
 from models.colaborador import Colaborador
@@ -191,3 +192,24 @@ def listar_colaboradores_para_exibicao():
             'autorizado_empilhadeira': colaborador.autorizado_empilhadeira,
         })
     return lista_exibicao
+
+def carregar_colaboradores_csv(path):
+    """
+    Carrega os colaboradores a partir de um arquivo CSV.
+    Args:
+        path (str): Caminho do arquivo CSV contendo os dados dos colaboradores.
+    Returns:
+        list: Lista de dicionários representando os colaboradores carregados do CSV.
+    """
+    #colaboradores = []
+    with open(path, mode='r', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            try:
+                Colaborador.create(
+                    matricula=row['matricula'],
+                    nome=row['nome'],
+                    cargo=row['cargo']
+                )
+            except Exception as e:
+                print(e)
