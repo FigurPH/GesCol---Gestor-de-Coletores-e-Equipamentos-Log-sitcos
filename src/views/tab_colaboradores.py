@@ -26,6 +26,8 @@ class TabColaboradores(wx.Panel):
         self.btn_editar = wx.Button(self, label='Editar')
         self.btn_excluir = wx.Button(self, label='Excluir')
         self.btn_atualizar = wx.Button(self, label='Atualizar Lista')
+        self.btn_upload_csv = wx.Button(self, label='...')
+
 
         # --- Layout ---
         sizer_principal = wx.BoxSizer(wx.VERTICAL)
@@ -35,6 +37,8 @@ class TabColaboradores(wx.Panel):
         sizer_botoes.Add(self.btn_editar, 0, wx.ALL, 5)
         sizer_botoes.Add(self.btn_excluir, 0, wx.ALL, 5)
         sizer_botoes.Add(self.btn_atualizar, 0, wx.ALL, 5)
+        sizer_botoes.AddStretchSpacer()
+        sizer_botoes.Add(self.btn_upload_csv, 0, wx.ALL, 5)
 
         sizer_principal.Add(self.list_ctrl, 1, wx.EXPAND | wx.ALL, 10)
         sizer_principal.Add(sizer_botoes, 0, wx.EXPAND | wx.ALL, 10)
@@ -54,10 +58,36 @@ class TabColaboradores(wx.Panel):
         self.list_ctrl.Bind(
             wx.EVT_LIST_ITEM_DESELECTED, lambda event: self.atualizar_estado_botoes()
         )
+        self.btn_upload_csv.Bind(wx.EVT_BUTTON, self.on_upload_csv)
 
         # --- Inicialização ---
         self.carregar_colaboradores()
         self.atualizar_estado_botoes()  # Inicializa o estado dos botões
+
+    def on_upload_csv(self, event=None):
+        """Evento chamado ao clicar no botão 'Upload CSV'."""
+        with wx.FileDialog(
+            self,
+            'Escolha um arquivo CSV',
+            wildcard='CSV files (*.csv)|*.csv',
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        ) as dlg:
+            if dlg.ShowModal() == wx.ID_OK:
+                caminho_arquivo = dlg.GetPath()
+                try:
+                    self.controller.carregar_colaboradores_csv(caminho_arquivo)
+                    wx.MessageBox(
+                        'Colaboradores carregados com sucesso!',
+                        'Sucesso',
+                        wx.OK | wx.ICON_INFORMATION,
+                    )
+                    self.carregar_colaboradores()
+                except Exception as e:
+                    wx.MessageBox(
+                        f'Erro ao carregar colaboradores: {str(e)}',
+                        'Erro',
+                        wx.OK | wx.ICON_ERROR,
+                    )
 
     def carregar_colaboradores(self):
         """Carrega os colaboradores do banco de dados e exibe na lista."""

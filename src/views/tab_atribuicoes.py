@@ -137,6 +137,10 @@ class TabAtribuicoes(wx.Panel):
 
         self.limpa_tela()
 
+    def reset_screen(self):
+        self.matricula.set('')
+        self.limpa_tela()
+
     def limpa_tela(self):
         """
         Limpa e desativa os campos e botões relacionados às atribuições na interface.
@@ -178,22 +182,33 @@ class TabAtribuicoes(wx.Panel):
 
         self.limpa_tela()
         atribuicoes = atribuicao_controller.carregar_informacoes_colaborador(self.matricula.GetValue())
-        self.lbl_nome.SetLabelText(atribuicoes.colaborador.nome)
-        self.lbl_cargo.SetLabelText(atribuicoes.colaborador.cargo)
-        self.txt_coletor_id.Enable()
-        self.btn_atribuir_coletor.Enable()
-        try:
-            if atribuicoes.coletor:
-                self.txt_coletor_id.SetValue(str(atribuicoes.coletor.id).zfill(3))
-                self.btn_atribuir_coletor.SetLabel('Devolver')
-                if atribuicoes.colaborador.autorizado_transpaleteira:
-                    self.cb_transpaleteira.SetValue(True)
-                    self.btn_atribuir_transpaleteira.Enable()
-                if atribuicoes.colaborador.autorizado_empilhadeira:
-                    self.cb_empilhadeira.SetValue(True)
-                    self.btn_atribuir_empilhadeira.Enable()
-        except Exception:
-            print('Nenhum coletor atribuído ainda (tab_atribuições)')
+        if atribuicoes:
+            self.lbl_nome.SetLabelText(atribuicoes.colaborador.nome)
+            self.lbl_cargo.SetLabelText(atribuicoes.colaborador.cargo)
+            self.txt_coletor_id.Enable()
+            self.btn_atribuir_coletor.Enable()
+            try:
+                if atribuicoes.coletor:
+                    self.txt_coletor_id.SetValue(str(atribuicoes.coletor.id).zfill(3))
+                    self.btn_atribuir_coletor.SetLabel('Devolver')
+                    if atribuicoes.colaborador.autorizado_transpaleteira:
+                        self.cb_transpaleteira.SetValue(True)
+                        self.btn_atribuir_transpaleteira.Enable()
+                    if atribuicoes.colaborador.autorizado_empilhadeira:
+                        self.cb_empilhadeira.SetValue(True)
+                        self.btn_atribuir_empilhadeira.Enable()
+            except Exception:
+                print('Nenhum coletor atribuído ainda (tab_atribuições)')
+        else:
+            resposta = wx.MessageBox(
+                "Colaborador com a matrícula fornecida não existe. Deseja adicionar um novo colaborador?",
+                "Colaborador não encontrado",
+                wx.YES_NO | wx.ICON_QUESTION
+            )
+            if resposta == wx.YES:
+                from src.views.tab_colaboradores import TabColaboradores
+                TabColaboradores(self.GetParent()).on_adicionar_colaborador()
+                
 
     def on_atribuir_coletor(self, evet=None):
         """
@@ -219,12 +234,14 @@ class TabAtribuicoes(wx.Panel):
             sucesso = self.controller.atribuir_coletor(matricula=matricula, coletor_id=coletor_id)
             mensagem = (f'Coletor {coletor_id} atribuído à Matrícula {matricula}'
                 if sucesso else 'Não foi possível atribuir este coletor à matrícula fornecida')
+            wx.MessageBox(mensagem, "Informação", wx.OK | wx.ICON_INFORMATION) if not sucesso else None
         else:
             sucesso = self.controller.devolver_coletor(coletor_id)
             mensagem = (f'Coletor {coletor_id} devolvido.'
                 if sucesso else 'Erro ao devolver coletor.')
+            wx.MessageBox(mensagem, "Informação", wx.OK | wx.ICON_INFORMATION) if not sucesso else None
 
-        print(mensagem)
+        
         self.on_buscar_colaborador()
         
 

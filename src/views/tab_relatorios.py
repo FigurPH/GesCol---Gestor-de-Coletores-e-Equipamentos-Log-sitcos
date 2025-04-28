@@ -81,6 +81,9 @@ class TabRelatorios(wx.Panel):
         self.list_ctrl.InsertColumn(5, "Data Atribuição", width=200)
         
         main_sizer.Add(self.list_ctrl, 1, wx.EXPAND|wx.ALL, 5)
+
+        # Desabilita a seleção de itens na lista
+        self.list_ctrl.Enable(False)
         
 
         # --- Inicialização ---
@@ -124,16 +127,21 @@ class TabRelatorios(wx.Panel):
         # Obtém os dados atualizados do controlador
         relatorio = self.controller.buscar_atribuicoes()
 
-        # Preenche a lista com os novos dados
+        # Ordena as atribuições para que as mais antigas (acima de 24 horas) fiquem no topo
+        relatorio.sort(key=lambda atrib: (atrib.data_inicio < wx.DateTime.Now() - wx.TimeSpan(24, 0), atrib.data_inicio))
+
+        # Adiciona as linhas ao relatório, destacando as que estão ativas há mais de 24 horas
         for atrib in relatorio:
-            self.list_ctrl.Append([
-                atrib.colaborador.matricula,
-                atrib.colaborador.nome,
-                str(atrib.coletor.id).zfill(3) if atrib.coletor else 'Sem Atribuição',
-                str(atrib.transpaleteira.id).zfill(3) if atrib.transpaleteira else 'Sem Atribuição',
-                str(atrib.empilhadeira.id).zfill(3) if atrib.empilhadeira else 'Sem Atribuição',
-                atrib.data_inicio.strftime('%Y-%m-%d %H:%M:%S')
-            ])
+            index = self.list_ctrl.InsertItem(self.list_ctrl.GetItemCount(), atrib.colaborador.matricula)
+            self.list_ctrl.SetItem(index, 1, atrib.colaborador.nome)
+            self.list_ctrl.SetItem(index, 2, str(atrib.coletor.id).zfill(3) if atrib.coletor else 'Sem Atribuição')
+            self.list_ctrl.SetItem(index, 3, str(atrib.transpaleteira.id).zfill(3) if atrib.transpaleteira else 'Sem Atribuição')
+            self.list_ctrl.SetItem(index, 4, str(atrib.empilhadeira.id).zfill(3) if atrib.empilhadeira else 'Sem Atribuição')
+            self.list_ctrl.SetItem(index, 5, atrib.data_inicio.strftime('%Y-%m-%d %H:%M:%S'))
+
+            # Verifica se a atribuição está ativa há mais de 24 horas
+            if atrib.data_inicio < wx.DateTime.Now() - wx.TimeSpan(24, 0):
+                self.list_ctrl.SetItemBackgroundColour(index, wx.Colour(255, 0, 0))
 
 
     def on_filtrar(self, event=None):

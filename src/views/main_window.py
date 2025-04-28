@@ -41,7 +41,7 @@ class MainWindow(wx.Frame):
         self.tab_atribuicoes = TabAtribuicoes(self.notebook)
         self.tab_colaboradores = TabColaboradores(self.notebook)
         self.tab_relatorios = TabRelatorios(self.notebook)
-        self.tab_equipamentos = TabEquipamentos(self.notebook)
+        #self.tab_equipamentos = TabEquipamentos(self.notebook)
         self.tab_coletores = TabColetores(self.notebook)
         # As abas abaixo estão comentadas, mas podem ser ativadas se necessário
         # self.tab_empilhadeiras = TabEmpilhadeiras(self.notebook)
@@ -49,10 +49,15 @@ class MainWindow(wx.Frame):
 
         # Adiciona as abas ao notebook
         self.notebook.AddPage(self.tab_atribuicoes, 'Atribuições')
+        #-*
+        #+elf.tab_atribuicoes.Bind(wx.EVT_SHOW, lambda x: self.tab_atribuicoes.limpa_tela())
         self.notebook.AddPage(self.tab_relatorios, 'Relatórios')
+        self.tab_relatorios.Bind(wx.EVT_SHOW, lambda x: self.tab_relatorios.atualizar_tela())
         self.notebook.AddPage(self.tab_colaboradores, 'Colaboradores')
-        self.notebook.AddPage(self.tab_equipamentos, 'Equipamentos')
+        self.tab_colaboradores.Bind(wx.EVT_SHOW, lambda x: self.tab_colaboradores.on_atualizar_lista())
+        #self.notebook.AddPage(self.tab_equipamentos, 'Equipamentos')
         self.notebook.AddPage(self.tab_coletores, 'Coletores')
+        self.tab_coletores.Bind(wx.EVT_SHOW, lambda x: self.tab_coletores.on_atualizar_lista())
 
         # self.notebook.AddPage(self.tab_empilhadeiras, "Empilhadeiras")
         # self.notebook.AddPage(self.tab_transpaleteiras, "Transpaleteiras")
@@ -63,6 +68,7 @@ class MainWindow(wx.Frame):
 
         # Centraliza a janela na tela
         self.Centre()
+
 
 
 if __name__ == '__main__':
