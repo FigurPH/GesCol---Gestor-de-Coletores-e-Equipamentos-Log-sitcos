@@ -16,7 +16,7 @@ Este programa se propõe a registrar as atribuições de equipamentos em ambient
 
 
 ### Como Executar
-1. Criação do banco local SQLite conforme a necessidade do projeto:
+1. Criação do banco local SQLite conforme a necessidade do projeto em scr/data:
 SQL
 ```bash
 -- Criação da Tabela: colaborador
