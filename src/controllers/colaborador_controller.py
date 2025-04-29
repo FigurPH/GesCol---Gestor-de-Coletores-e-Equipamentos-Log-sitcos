@@ -1,4 +1,5 @@
 import csv
+
 from peewee import IntegrityError
 
 from models.colaborador import Colaborador
@@ -27,7 +28,7 @@ def adicionar_colaborador(
         Raises:
             IntegrityError: Caso ocorra um erro ao tentar criar o colaborador no banco de dados.
     """
-   
+
     try:
         colaborador = Colaborador.create(
             matricula=matricula,
@@ -92,7 +93,7 @@ def editar_colaborador(
         Colaborador.DoesNotExist: Caso o colaborador com a matrícula fornecida não seja encontrado.
         Exception: Para outros erros inesperados durante a edição.
     """
-    
+
     try:
         colaborador = Colaborador.get(Colaborador.matricula == matricula)
         colaborador.nome = nome
@@ -193,6 +194,7 @@ def listar_colaboradores_para_exibicao():
         })
     return lista_exibicao
 
+
 def carregar_colaboradores_csv(path):
     """
     Carrega os colaboradores a partir de um arquivo CSV.
@@ -201,7 +203,7 @@ def carregar_colaboradores_csv(path):
     Returns:
         list: Lista de dicionários representando os colaboradores carregados do CSV.
     """
-    #colaboradores = []
+    # colaboradores = []
     with open(path, mode='r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         for row in reader:

@@ -28,7 +28,6 @@ class TabColaboradores(wx.Panel):
         self.btn_atualizar = wx.Button(self, label='Atualizar Lista')
         self.btn_upload_csv = wx.Button(self, label='...')
 
-
         # --- Layout ---
         sizer_principal = wx.BoxSizer(wx.VERTICAL)
         sizer_botoes = wx.BoxSizer(wx.HORIZONTAL)

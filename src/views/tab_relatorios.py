@@ -1,4 +1,5 @@
 import wx
+
 from controllers import relatorios_controller
 
 
@@ -12,7 +13,6 @@ class TabRelatorios(wx.Panel):
 
         # --- Sizer principal ---
         main_sizer = wx.BoxSizer(wx.VERTICAL)
-
 
         # --- Seção de superior de estatísticas ---
         stats_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -37,36 +37,32 @@ class TabRelatorios(wx.Panel):
 
         ]: stats_sizer.Add(stat, 0, wx.ALL, 5)
         # Adiciona um separador visual entre as estatísticas
-        stats_sizer.Add(refresh_button, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        stats_sizer.Add(refresh_button, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         main_sizer.Add(stats_sizer, 0, wx.EXPAND)
-
 
         # --- Seção de pesquisa/busca ---
         search_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         # Filtros
         matricula_label = wx.StaticText(self, label="Matrícula:")
         self.matricula_field = wx.TextCtrl(self)
-        search_sizer.Add(matricula_label, 0, wx.ALL|wx.CENTER, 5)
+        search_sizer.Add(matricula_label, 0, wx.ALL | wx.CENTER, 5)
         search_sizer.Add(self.matricula_field, 1, wx.ALL, 5)
-        
+
         coletor_label = wx.StaticText(self, label="Coletor:")
         self.coletor_field = wx.TextCtrl(self)
-        search_sizer.Add(coletor_label, 0, wx.ALL|wx.CENTER, 5)
+        search_sizer.Add(coletor_label, 0, wx.ALL | wx.CENTER, 5)
         search_sizer.Add(self.coletor_field, 1, wx.ALL, 5)
-        
+
         '''equipamento_label = wx.StaticText(self, label="Equipamento:")
         self.equipamento_field = wx.TextCtrl(self)
         search_sizer.Add(equipamento_label, 0, wx.ALL|wx.CENTER, 5)
-        search_sizer.Add(self.equipamento_field, 1, wx.ALL, 5)''' #TODO Adicionar filtro dos equipamentos com dropdow para selecionar tipo
+        search_sizer.Add(self.equipamento_field, 1, wx.ALL, 5)'''  # TODO Adicionar filtro dos equipamentos com dropdow para selecionar tipo
 
-        
         self.btn_filtrar = wx.Button(self, label="Filtrar")
         search_sizer.Add(self.btn_filtrar, 0, wx.ALL, 5)
-        
-        main_sizer.Add(search_sizer, 0, wx.EXPAND|wx.ALL, 5)
 
-
+        main_sizer.Add(search_sizer, 0, wx.EXPAND | wx.ALL, 5)
 
         # --- Seção do relatório ---
         self.list_ctrl = wx.ListCtrl(
@@ -79,29 +75,26 @@ class TabRelatorios(wx.Panel):
         self.list_ctrl.InsertColumn(3, "Transpaleteira ID", width=200)
         self.list_ctrl.InsertColumn(4, "Empilhadeira ID", width=200)
         self.list_ctrl.InsertColumn(5, "Data Atribuição", width=200)
-        
-        main_sizer.Add(self.list_ctrl, 1, wx.EXPAND|wx.ALL, 5)
+
+        main_sizer.Add(self.list_ctrl, 1, wx.EXPAND | wx.ALL, 5)
 
         # Desabilita a seleção de itens na lista
         self.list_ctrl.Enable(False)
-        
 
         # --- Inicialização ---
         self.atualizar_tela()
-        
-
 
         # --- Bindings ---
         self.btn_filtrar.Bind(wx.EVT_BUTTON, self.on_filtrar)
         self.SetSizer(main_sizer)
-        
+
     def atualizar_tela(self, event=None):
         self.atualizar_estatisticas()
         self.atualizar_relatorio()
         self.coletor_field.SetValue('')
         self.matricula_field.SetValue('')
 
-    def atualizar_estatisticas(self,  event = None):
+    def atualizar_estatisticas(self, event=None):
         """
         Atualiza as estatísticas de colaboradores e equipamentos atribuídos.
         """
@@ -143,13 +136,11 @@ class TabRelatorios(wx.Panel):
             if atrib.data_inicio < wx.DateTime.Now() - wx.TimeSpan(24, 0):
                 self.list_ctrl.SetItemBackgroundColour(index, wx.Colour(255, 0, 0))
 
-
     def on_filtrar(self, event=None):
         # Obtém os valores dos campos de filtro
         matricula = self.matricula_field.GetValue().strip()
         coletor = self.coletor_field.GetValue().strip()
         # equipamento = self.equipamento_field.GetValue().strip()
-        
 
         # Obtém os dados filtrados do controlador
         relatorio_filtrado = self.controller.filtrar_atribuicoes(
@@ -171,5 +162,3 @@ class TabRelatorios(wx.Panel):
             str(relatorio_filtrado.empilhadeira.id).zfill(3) if relatorio_filtrado.empilhadeira else 'Sem Atribuição',
             relatorio_filtrado.data_inicio.strftime('%Y-%m-%d %H:%M:%S')
             ])
-
-

@@ -1,4 +1,3 @@
-from datetime import datetime
 
 from models.atribuicao import Atribuicao
 from src.controllers import atribuicao_controller
@@ -20,6 +19,7 @@ def contar_colaboradores_ativos():
     ).count()
     return colaboradores_ativos
 
+
 def contar_coletores_atribuidos():
     """
     Conta o número de coletores atribuídos no sistema.
@@ -35,6 +35,7 @@ def contar_coletores_atribuidos():
         Atribuicao.data_fim.is_null() & Atribuicao.coletor.is_null(False)
     ).count()
     return coletores_atribuidos
+
 
 def contar_transpaleteiras_atribuidas():
     """
@@ -52,6 +53,7 @@ def contar_transpaleteiras_atribuidas():
     ).count()
     return transpaleteiras_atribuidas
 
+
 def contar_empilhadeiras_atribuidas():
     """
     Conta o número de empilhadeiras atribuídas no sistema.
@@ -68,6 +70,7 @@ def contar_empilhadeiras_atribuidas():
     ).count()
     return empilhadeiras_atribuidas
 
+
 def buscar_atribuicoes():
     """
     Busca todas as atribuições que não possuem data de término.
@@ -79,6 +82,7 @@ def buscar_atribuicoes():
 
     atribuicoes = Atribuicao.select().where(Atribuicao.data_fim.is_null())
     return list(atribuicoes)
+
 
 def filtrar_atribuicoes(matricula=None, coletor=None):
     """

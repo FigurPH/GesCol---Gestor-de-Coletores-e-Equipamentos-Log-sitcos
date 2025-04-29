@@ -208,7 +208,6 @@ class TabAtribuicoes(wx.Panel):
             if resposta == wx.YES:
                 from src.views.tab_colaboradores import TabColaboradores
                 TabColaboradores(self.GetParent()).on_adicionar_colaborador()
-                
 
     def on_atribuir_coletor(self, evet=None):
         """
@@ -241,16 +240,14 @@ class TabAtribuicoes(wx.Panel):
                 if sucesso else 'Erro ao devolver coletor.')
             wx.MessageBox(mensagem, "Informação", wx.OK | wx.ICON_INFORMATION) if not sucesso else None
 
-        
         self.on_buscar_colaborador()
-        
 
     def on_atribuir_transpaleteira(self, evet=None): ...
 
     def on_atribuir_empilhadeira(self, evet=None): ...
 
     def atribuir_equipamento(self, tipo_equipamento):
-        
+
         match tipo_equipamento:
             case 'coletor':
                 print('É um coletor, tentando adicionar')

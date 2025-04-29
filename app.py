@@ -11,7 +11,6 @@ sys.path.append(
 # Verifica se o parâmetro DEBUG foi passado como argumento
 DEBUG = '--debug' in sys.argv
 
-from resources.settings import Settings
 from views.main_window import MainWindow
 
 if __name__ == '__main__':

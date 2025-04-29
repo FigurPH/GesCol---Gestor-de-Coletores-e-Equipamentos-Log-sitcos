@@ -109,7 +109,7 @@ def editar_empilhadeira(empilhadeira_id, modelo, disponibilidade):
         Empilhadeira.DoesNotExist: Se a empilhadeira com o ID fornecido não for encontrada
         Exception: Para outros erros que possam ocorrer durante a edição
     """
-    
+
     try:
         empilhadeira = Empilhadeira.get(Empilhadeira.id == empilhadeira_id)
         empilhadeira.modelo = modelo

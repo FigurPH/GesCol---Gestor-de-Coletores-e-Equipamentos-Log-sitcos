@@ -1,7 +1,8 @@
+import csv
+
 from peewee import IntegrityError
 
 from models.coletor import Coletor
-import csv
 
 
 def adicionar_coletor(id, modelo, disponibilidade):
@@ -90,6 +91,7 @@ def excluir_coletor(coletor_id):
     except Exception:
         print('Algo errado na exclusão do coletor')
         return False
+
 
 def carregar_coletores_csv(path):
     """

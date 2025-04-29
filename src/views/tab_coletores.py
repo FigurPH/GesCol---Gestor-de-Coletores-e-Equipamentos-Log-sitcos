@@ -1,7 +1,6 @@
 import wx
 
-from src.controllers import coletor_controller
-from src.controllers import atribuicao_controller
+from src.controllers import atribuicao_controller, coletor_controller
 
 
 class TabColetores(wx.Panel):
@@ -155,8 +154,6 @@ class TabColetores(wx.Panel):
                         wx.OK | wx.ICON_ERROR,
                     )
 
-
-
     def on_atualizar_lista(self, event=None):
         """
         Manipula o evento para atualizar a lista de coletores.
@@ -267,7 +264,7 @@ class TabColetores(wx.Panel):
         if select_index != -1:
             id = self.list_ctrl.GetItemText(select_index, 0)
             coletor = self.controller.buscar_coletor(int(id))
-            atribuicao =  atribuicao_controller.buscar_atribuicao_por_chave(
+            atribuicao = atribuicao_controller.buscar_atribuicao_por_chave(
                 chave='coletor',
                 valor=coletor.id
             )
@@ -449,7 +446,6 @@ class EditarColetorDialog(wx.Dialog):
     __init__(parent, coletor)
         Construtor da classe. Inicializa os elementos da interface e configura o layout.
     """
-    
 
     def __init__(self, parent, coletor):
         super().__init__(parent, title='Editar Coletor', size=(400, 300))

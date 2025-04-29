@@ -14,7 +14,10 @@ Este programa se propõe a registrar as atribuições de equipamentos em ambient
 - **Python**: Linguagem principal para desenvolvimento.
 - **SQLite**: Banco de dados leve e eficiente.
 
-### SQL
+
+### Como Executar
+1. Criação do banco local SQLite conforme a necessidade do projeto:
+SQL
 ```bash
 -- Criação da Tabela: colaborador
 -- Armazena informações sobre os colaboradores.
@@ -83,21 +86,19 @@ CREATE INDEX transpaleteira_modelo ON transpaleteira (modelo);
 -- Este comando geralmente é executado uma vez por conexão.
 ```
 
-### Como Executar
-
-1. Clone o repositório:
+2. Clone o repositório:
     ```bash
     git clone https://github.com/FigurPH/GesCol---Gestor-de-Coletores-e-Equipamentos-Log-sitcos.git GesCol
     ```
-2. Navegue até o diretório do projeto:
+3. Navegue até o diretório do projeto:
     ```bash
     cd GesCol
     ```
-3. Instale as dependências:
+4. Instale as dependências:
     ```bash
     pip install -r requirements.txt
     ```
-4. Execute a aplicação (TASKIPY):
+5. Execute a aplicação (TASKIPY):
     ```bash
     task run
     ```

@@ -23,7 +23,7 @@ def buscar_atribuicao_por_matricula(matricula):
         Atribuicao or None: Retorna a atribuição ativa mais recente do colaborador, 
         ou None se nenhuma atribuição ativa for encontrada.
     """
-    
+
     atribuicao = (
         Atribuicao.select()
         .join(Colaborador)
