@@ -63,7 +63,7 @@ class MainWindow(wx.Frame):
 
         # Cria uma barra de status na parte inferior da janela
         self.CreateStatusBar()
-        self.SetStatusText('Bem-vindo ao GesCol!            |              v0.9.0')
+        self.SetStatusText('Bem-vindo ao GesCol!            |              v0.9.1')
 
         # Centraliza a janela na tela
         self.Centre()

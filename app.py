@@ -2,6 +2,7 @@ import os
 import sys
 
 import wx
+from resources.logger import LogExecution
 
 # Adiciona o diretório 'src' ao sys.path para importar os módulos corretamente
 sys.path.append(
@@ -12,6 +13,7 @@ sys.path.append(
 DEBUG = '--debug' in sys.argv
 
 from views.main_window import MainWindow
+
 
 if __name__ == '__main__':
     app = wx.App()

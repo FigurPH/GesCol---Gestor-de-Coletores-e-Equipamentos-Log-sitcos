@@ -94,6 +94,11 @@ CREATE INDEX transpaleteira_modelo ON transpaleteira (modelo);
     ```bash
     cd GesCol
     ```
+4. Crie o ambiente virtual:
+    ```bash
+    python -m venv .venv
+    .\.venv\Script\activate
+    ```
 4. Instale as dependências:
     ```bash
     pip install -r requirements.txt
