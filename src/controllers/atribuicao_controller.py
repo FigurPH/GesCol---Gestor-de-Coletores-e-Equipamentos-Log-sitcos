@@ -1,12 +1,10 @@
 # src/controllers/atribuicao_controller.py
 
-
 from datetime import datetime
 
 from models.atribuicao import Atribuicao
 from models.colaborador import Colaborador
 from src.controllers import coletor_controller
-
 
 def buscar_atribuicao_por_matricula(matricula):
     """
@@ -133,6 +131,7 @@ def atribuir_coletor(matricula, coletor_id):
         - Se o coletor não existir, uma mensagem será exibida indicando isso.
         - Se o coletor já estiver atribuído, a função não prossegue com a atribuição.
     """
+
     coletor = coletor_controller.buscar_coletor(int(coletor_id))
     if coletor and coletor.disponibilidade == True:
         if not bool_coletor_atribuído(coletor_id):

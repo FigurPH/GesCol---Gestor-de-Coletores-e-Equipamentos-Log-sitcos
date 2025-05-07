@@ -2,7 +2,6 @@ import os
 import sys
 
 import wx
-from resources.logger import LogExecution
 
 # Adiciona o diretório 'src' ao sys.path para importar os módulos corretamente
 sys.path.append(
@@ -24,7 +23,9 @@ if __name__ == '__main__':
         main_window.SetWindowStyle(wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
         main_window.Maximize()
     main_window.Show()
+
     app.MainLoop()
+
 
 """TODO: Talvez seja uma boa ideia colocar alguma forma de login
 para saber quem fez cada alteração observada no logging.

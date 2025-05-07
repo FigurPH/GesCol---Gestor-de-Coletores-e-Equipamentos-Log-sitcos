@@ -6,7 +6,8 @@ from .tab_colaboradores import TabColaboradores
 from .tab_coletores import TabColetores
 from .tab_relatorios import TabRelatorios
 
-
+from src.resources.logger import logger
+#@logger(log_level=1)
 class MainWindow(wx.Frame):
     """
     Classe principal da janela do sistema GesCol.

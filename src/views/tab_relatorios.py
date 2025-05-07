@@ -79,7 +79,7 @@ class TabRelatorios(wx.Panel):
         main_sizer.Add(self.list_ctrl, 1, wx.EXPAND | wx.ALL, 5)
 
         # Desabilita a seleção de itens na lista
-        self.list_ctrl.Enable(False)
+        # self.list_ctrl.Enable(False)
 
         # --- Inicialização ---
         self.atualizar_tela()
