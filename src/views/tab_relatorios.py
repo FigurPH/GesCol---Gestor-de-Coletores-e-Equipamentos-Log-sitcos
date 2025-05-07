@@ -45,12 +45,12 @@ class TabRelatorios(wx.Panel):
 
         # Filtros
         matricula_label = wx.StaticText(self, label="Matrícula:")
-        self.matricula_field = wx.TextCtrl(self)
+        self.matricula_field = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
         search_sizer.Add(matricula_label, 0, wx.ALL | wx.CENTER, 5)
         search_sizer.Add(self.matricula_field, 1, wx.ALL, 5)
 
         coletor_label = wx.StaticText(self, label="Coletor:")
-        self.coletor_field = wx.TextCtrl(self)
+        self.coletor_field = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
         search_sizer.Add(coletor_label, 0, wx.ALL | wx.CENTER, 5)
         search_sizer.Add(self.coletor_field, 1, wx.ALL, 5)
 
@@ -86,6 +86,8 @@ class TabRelatorios(wx.Panel):
 
         # --- Bindings ---
         self.btn_filtrar.Bind(wx.EVT_BUTTON, self.on_filtrar)
+        self.matricula_field.Bind(wx.EVT_TEXT_ENTER, self.on_filtrar)
+        self.coletor_field.Bind(wx.EVT_TEXT_ENTER, self.on_filtrar)
         self.SetSizer(main_sizer)
 
     def atualizar_tela(self, event=None):
