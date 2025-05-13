@@ -1,23 +1,22 @@
 
 from models.atribuicao import Atribuicao
+from models.coletor import Coletor
 from src.controllers import atribuicao_controller
 
 
-def contar_colaboradores_ativos():
+def contar_coletores_disponiveis():
     """
-    Conta o número de colaboradores ativos no sistema.
+    Conta o número de coletores disponíveis no sistema.
 
     Esta função consulta o banco de dados para contar o número total de
-    colaboradores que estão atualmente ativos (ou seja, aqueles que têm
-    atribuições com data de término nula).
+    coletores atualmente disponíveis.
 
     Returns:
-        int: O número total de colaboradores ativos.
+        int: O número total de coletores disponíveis.
     """
-    colaboradores_ativos = Atribuicao.select().where(
-        Atribuicao.data_fim.is_null()
-    ).count()
-    return colaboradores_ativos
+    
+    coletores_disponiveis = (Coletor.select().where(Coletor.disponibilidade == True).count() - contar_coletores_atribuidos())
+    return coletores_disponiveis
 
 
 def contar_coletores_atribuidos():

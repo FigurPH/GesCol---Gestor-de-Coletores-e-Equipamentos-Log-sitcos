@@ -18,8 +18,8 @@ class TabRelatorios(wx.Panel):
         stats_sizer = wx.BoxSizer(wx.HORIZONTAL)
         colaboradores_ativos = wx.StaticText(self, label='Colaboradores Ativos: ')
         self.lbl_colaboradores_ativos = wx.StaticText(self, label='0')
-        coletores_atribuidos = wx.StaticText(self, label='Coletores Atribuídos: ')
-        self.lbl_coletores_atribuidos = wx.StaticText(self, label='0')
+        coletores_disponíveis = wx.StaticText(self, label='Coletores Disponíveis: ')
+        self.lbl_coletores_disponíveis = wx.StaticText(self, label='0')
         transpaleteiras_atribuidas = wx.StaticText(self, label='Transpaleteiras Atribuídas: ')
         self.lbl_transpaleteiras_atribuidas = wx.StaticText(self, label='0')
         empilhadeiras_atribuidas = wx.StaticText(self, label='Empilhadeiras Atribuídas: ')
@@ -31,7 +31,7 @@ class TabRelatorios(wx.Panel):
         # Adicionando cada elemento à janela
         for stat in [
             colaboradores_ativos, self.lbl_colaboradores_ativos,
-            coletores_atribuidos, self.lbl_coletores_atribuidos,
+            coletores_disponíveis, self.lbl_coletores_disponíveis,
             transpaleteiras_atribuidas, self.lbl_transpaleteiras_atribuidas,
             empilhadeiras_atribuidas, self.lbl_empilhadeiras_atribuidas
 
@@ -101,14 +101,14 @@ class TabRelatorios(wx.Panel):
         Atualiza as estatísticas de colaboradores e equipamentos atribuídos.
         """
         # Obtém os dados atualizados do controlador
-        colaboradores_ativos = self.controller.contar_colaboradores_ativos()
-        coletores_atribuidos = self.controller.contar_coletores_atribuidos()
+        colaboradores_ativos = self.controller.contar_coletores_atribuidos()
+        coletores_disponíveis = self.controller.contar_coletores_disponiveis()
         transpaleteiras_atribuidas = self.controller.contar_transpaleteiras_atribuidas()
         empilhadeiras_atribuidas = self.controller.contar_empilhadeiras_atribuidas()
 
         # Atualiza os rótulos com os novos valores
         self.lbl_colaboradores_ativos.SetLabel(str(colaboradores_ativos))
-        self.lbl_coletores_atribuidos.SetLabel(str(coletores_atribuidos))
+        self.lbl_coletores_disponíveis.SetLabel(str(coletores_disponíveis))
         self.lbl_transpaleteiras_atribuidas.SetLabel(str(transpaleteiras_atribuidas))
         self.lbl_empilhadeiras_atribuidas.SetLabel(str(empilhadeiras_atribuidas))
 
@@ -116,6 +116,7 @@ class TabRelatorios(wx.Panel):
         """
         Atualiza a lista de relatórios com os dados mais recentes.
         """
+
         # Limpa a lista atual
         self.list_ctrl.DeleteAllItems()
 
@@ -123,7 +124,7 @@ class TabRelatorios(wx.Panel):
         relatorio = self.controller.buscar_atribuicoes()
 
         # Ordena as atribuições para que as mais antigas (acima de 24 horas) fiquem no topo
-        relatorio.sort(key=lambda atrib: (atrib.data_inicio < wx.DateTime.Now() - wx.TimeSpan(24, 0), atrib.data_inicio))
+        relatorio.sort(key=lambda atrib: atrib.data_inicio)
 
         # Adiciona as linhas ao relatório, destacando as que estão ativas há mais de 24 horas
         for atrib in relatorio:
@@ -134,9 +135,10 @@ class TabRelatorios(wx.Panel):
             self.list_ctrl.SetItem(index, 4, str(atrib.empilhadeira.id).zfill(3) if atrib.empilhadeira else 'Sem Atribuição')
             self.list_ctrl.SetItem(index, 5, atrib.data_inicio.strftime('%Y-%m-%d %H:%M:%S'))
 
+            # Verifica se a atribuição está ativa há mais de 10 horas
+            self.list_ctrl.SetItemBackgroundColour(index, wx.Colour(255, 191, 0)) if atrib.data_inicio < wx.DateTime.Now() - wx.TimeSpan(10, 0) else None
             # Verifica se a atribuição está ativa há mais de 24 horas
-            if atrib.data_inicio < wx.DateTime.Now() - wx.TimeSpan(24, 0):
-                self.list_ctrl.SetItemBackgroundColour(index, wx.Colour(255, 0, 0))
+            self.list_ctrl.SetItemBackgroundColour(index, wx.Colour(255, 0, 0)) if atrib.data_inicio < wx.DateTime.Now() - wx.TimeSpan(24, 0) else None
 
     def on_filtrar(self, event=None):
         # Obtém os valores dos campos de filtro
