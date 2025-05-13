@@ -67,7 +67,8 @@ class TabAtribuicoes(wx.Panel):
         # --- Linha do Coletor ---
         coletor_sizer = wx.BoxSizer(wx.HORIZONTAL)
         coletor_label = wx.StaticText(self, label="Coletor:")
-        self.txt_coletor_id = wx.TextCtrl(self, size=(150, -1), name="coletor_id")
+        self.txt_coletor_id = wx.TextCtrl(self, size=(150, -1), name="coletor_id", 
+                                        style=wx.TE_PROCESS_ENTER)
         self.btn_atribuir_coletor = wx.Button(self, label="Atribuir", name="btn_atribuir_coletor")
         self.data_coletor = wx.StaticText(self, label="data_coletor")
         coletor_sizer.Add(coletor_label, 0, wx.ALL, 5)
@@ -84,9 +85,11 @@ class TabAtribuicoes(wx.Panel):
         # Linha da Transpaleteira
         transpaleteira_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.cb_transpaleteira = wx.CheckBox(self, label="Transpaleteira")
-        self.txt_transpaleteira_id = wx.TextCtrl(self, size=(150, -1), name="txt_transpaleteira_id")
+        self.txt_transpaleteira_id = wx.TextCtrl(self, size=(150, -1), name="txt_transpaleteira_id", 
+                                                style=wx.TE_PROCESS_ENTER)
         self.txt_transpaleteira_id.SetValue("Em breve...")
-        self.btn_atribuir_transpaleteira = wx.Button(self, label="Atribuir", name="btn_atribuir_transpaleteira")
+        self.btn_atribuir_transpaleteira = wx.Button(self, label="Atribuir", 
+                                                    name="btn_atribuir_transpaleteira")
         self.data_transpaleteira = wx.StaticText(self, label="data_transpaleteira")
         transpaleteira_sizer.Add(self.cb_transpaleteira, 0, wx.ALL, 5)
         transpaleteira_sizer.Add(self.txt_transpaleteira_id, 0, wx.ALL, 5)
@@ -97,7 +100,8 @@ class TabAtribuicoes(wx.Panel):
         # Linha da Empilhadeira
         empilhadeira_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.cb_empilhadeira = wx.CheckBox(self, label="Empilhadeira  ")
-        self.txt_empilhadeira_id = wx.TextCtrl(self, size=(150, -1), name="txt_empilhadeira_id")
+        self.txt_empilhadeira_id = wx.TextCtrl(self, size=(150, -1), name="txt_empilhadeira_id",
+                                                style=wx.TE_PROCESS_ENTER)
         self.txt_empilhadeira_id.SetValue("Em breve...")
         self.btn_atribuir_empilhadeira = wx.Button(self, label="Atribuir", name="btn_atribuir_empilhadeira")
         self.data_empilhadeira = wx.StaticText(self, label="data_empilhadeira")
@@ -129,11 +133,17 @@ class TabAtribuicoes(wx.Panel):
         self.btn_buscar.Bind(wx.EVT_BUTTON, self.on_buscar_colaborador)
         self.matricula.Bind(wx.EVT_TEXT_ENTER, self.on_buscar_colaborador)
         self.btn_atribuir_coletor.Bind(wx.EVT_BUTTON,
-                                       lambda x: self.atribuir_equipamento(tipo_equipamento='coletor'))
+                                            lambda x: self.atribuir_equipamento(tipo_equipamento='coletor'))
         self.btn_atribuir_transpaleteira.Bind(wx.EVT_BUTTON,
-                                              lambda x: self.atribuir_equipamento('transpaleteira'))
+                                            lambda x: self.atribuir_equipamento('transpaleteira'))
         self.btn_atribuir_empilhadeira.Bind(wx.EVT_BUTTON,
                                             lambda x: self.atribuir_equipamento('empilhadeira'))
+        self.txt_coletor_id.Bind(wx.EVT_TEXT_ENTER,
+                                            lambda x: self.atribuir_equipamento(tipo_equipamento='coletor'))
+        '''self.txt_transpaleteira_id.Bind(wx.EVT_TEXT_ENTER,
+                                            lambda x: self.atribuir_equipamento('transpaleteira'))
+        self.txt_empilhadeira_id.Bind(wx.EVT_TEXT_ENTER,
+                                            lambda x: self.atribuir_equipamento('empilhadeira'))'''
 
         self.limpa_tela()
 
@@ -163,6 +173,9 @@ class TabAtribuicoes(wx.Panel):
         self.txt_coletor_id.SetValue('')
         self.txt_empilhadeira_id.Disable()
         self.txt_transpaleteira_id.Disable()
+        self.lbl_nome.SetLabelText('')
+        self.lbl_cargo.SetLabelText('')
+        self.matricula.SetFocus()
 
     def on_buscar_colaborador(self, evet=None):
         """
@@ -186,10 +199,12 @@ class TabAtribuicoes(wx.Panel):
             self.lbl_nome.SetLabelText(atribuicoes.colaborador.nome)
             self.lbl_cargo.SetLabelText(atribuicoes.colaborador.cargo)
             self.txt_coletor_id.Enable()
+            self.txt_coletor_id.SetFocus()
             self.btn_atribuir_coletor.Enable()
             try:
                 if atribuicoes.coletor:
                     self.txt_coletor_id.SetValue(str(atribuicoes.coletor.id).zfill(3))
+                    self.txt_coletor_id.SelectAll()
                     self.btn_atribuir_coletor.SetLabel('Devolver')
                     if atribuicoes.colaborador.autorizado_transpaleteira:
                         self.cb_transpaleteira.SetValue(True)
@@ -234,13 +249,17 @@ class TabAtribuicoes(wx.Panel):
             mensagem = (f'Coletor {coletor_id} atribuído à Matrícula {matricula}'
                 if sucesso else 'Não foi possível atribuir este coletor à matrícula fornecida')
             wx.MessageBox(mensagem, "Informação", wx.OK | wx.ICON_INFORMATION) if not sucesso else None
+            # Tem que comparar not sucesso para mostrar apenas quando der erro.
         else:
             sucesso = self.controller.devolver_coletor(coletor_id)
             mensagem = (f'Coletor {coletor_id} devolvido.'
                 if sucesso else 'Erro ao devolver coletor.')
             wx.MessageBox(mensagem, "Informação", wx.OK | wx.ICON_INFORMATION) if not sucesso else None
+            # Tem que comparar not sucesso para mostrar apenas quando der erro.
 
-        self.on_buscar_colaborador()
+
+        self.limpa_tela()
+        self.matricula.SetValue('')
 
     def on_atribuir_transpaleteira(self, evet=None): ...
 
